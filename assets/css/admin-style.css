@@ -1,0 +1,182 @@
+:root {
+    --wppam-primary: #6366f1;
+    --wppam-primary-hover: #4f46e5;
+    --wppam-success: #22c55e;
+    --wppam-danger: #ef4444;
+    --wppam-warning: #f59e0b;
+    --wppam-bg-card: #ffffff;
+    --wppam-text-main: #1e293b;
+    --wppam-text-muted: #64748b;
+    --wppam-border: #e2e8f0;
+    --wppam-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --wppam-radius: 12px;
+}
+
+.wppam-dashboard-wrapper {
+    margin: 20px 20px 0 0;
+    font-family: 'Outfit', sans-serif;
+}
+
+.wppam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.wppam-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--wppam-text-main);
+    margin: 0;
+}
+
+/* Stats Grid */
+.wppam-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.wppam-stat-card {
+    background: var(--wppam-bg-card);
+    padding: 24px;
+    border-radius: var(--wppam-radius);
+    box-shadow: var(--wppam-shadow);
+    border: 1px solid var(--wppam-border);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wppam-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.wppam-stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--wppam-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.wppam-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--wppam-text-main);
+}
+
+.wppam-stat-value.revenue { color: var(--wppam-success); }
+.wppam-stat-value.expenses { color: var(--wppam-danger); }
+.wppam-stat-value.cogs { color: var(--wppam-warning); }
+.wppam-stat-value.profit { color: var(--wppam-primary); }
+
+/* Chart Section */
+.wppam-chart-container {
+    background: var(--wppam-bg-card);
+    padding: 24px;
+    border-radius: var(--wppam-radius);
+    box-shadow: var(--wppam-shadow);
+    border: 1px solid var(--wppam-border);
+    margin-bottom: 30px;
+}
+
+/* Table Design */
+.wppam-table-card {
+    background: var(--wppam-bg-card);
+    border-radius: var(--wppam-radius);
+    box-shadow: var(--wppam-shadow);
+    border: 1px solid var(--wppam-border);
+    overflow: hidden;
+}
+
+.wppam-custom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.wppam-custom-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 16px 24px;
+    font-weight: 600;
+    color: var(--wppam-text-muted);
+    border-bottom: 1px solid var(--wppam-border);
+}
+
+.wppam-custom-table td {
+    padding: 16px 24px;
+    color: var(--wppam-text-main);
+    border-bottom: 1px solid var(--wppam-border);
+}
+
+.wppam-custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+.wppam-custom-table tr:hover {
+    background: #f1f5f9;
+}
+
+/* Form Styling */
+.wppam-form-card {
+    max-width: 600px;
+    background: var(--wppam-bg-card);
+    padding: 32px;
+    border-radius: var(--wppam-radius);
+    box-shadow: var(--wppam-shadow);
+    border: 1px solid var(--wppam-border);
+}
+
+.wppam-form-group {
+    margin-bottom: 20px;
+}
+
+.wppam-form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--wppam-text-main);
+}
+
+.wppam-input, .wppam-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--wppam-border);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wppam-input:focus, .wppam-select:focus {
+    outline: none;
+    border-color: var(--wppam-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.wppam-btn-primary {
+    background: var(--wppam-primary) !important;
+    color: white !important;
+    padding: 10px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    cursor: pointer;
+    transition: background 0.2s !important;
+}
+
+.wppam-btn-primary:hover {
+    background: var(--wppam-primary-hover) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.wppam-animate {
+    animation: fadeIn 0.4s ease-out forwards;
+}

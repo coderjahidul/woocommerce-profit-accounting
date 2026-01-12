@@ -348,12 +348,104 @@ function wppam_calculate_profit_for_range($start_date, $end_date)
 }
 
 // ============================
+// INVENTORY HELPERS
+// ============================
+/**
+ * Get comprehensive inventory data.
+ */
+function wppam_get_inventory_data()
+{
+    $products = wc_get_products([
+        'limit' => -1,
+        'status' => 'publish',
+    ]);
+
+    $total_value_cost = 0;
+    $total_units = 0;
+    $out_of_stock_count = 0;
+    $product_stats = [];
+
+    foreach ($products as $product) {
+        if ($product->is_type('variable')) {
+            foreach ($product->get_children() as $variation_id) {
+                $variation = wc_get_product($variation_id);
+                if (!$variation) continue;
+                $data = wppam_process_inventory_item($variation);
+                $total_value_cost += $data['stock_value'];
+                $total_units += $data['stock'];
+                if ($data['stock'] <= 0) $out_of_stock_count++;
+                $product_stats[] = $data;
+            }
+        } else {
+            $data = wppam_process_inventory_item($product);
+            $total_value_cost += $data['stock_value'];
+            $total_units += $data['stock'];
+            if ($data['stock'] <= 0) $out_of_stock_count++;
+            $product_stats[] = $data;
+        }
+    }
+
+    // Dead Stock (No sales in 30 days)
+    $recent_order_items = [];
+    $recent_orders = wc_get_orders([
+        'limit' => -1,
+        'status' => ['processing', 'completed'],
+        'date_created' => '>' . date('Y-m-d', strtotime('-30 days')),
+    ]);
+    foreach ($recent_orders as $order) {
+        foreach ($order->get_items() as $item) {
+            $id = $item->get_variation_id() ?: $item->get_product_id();
+            $recent_order_items[$id] = true;
+        }
+    }
+
+    $dead_stock = [];
+    foreach ($product_stats as $stat) {
+        if (!isset($recent_order_items[$stat['id']]) && $stat['stock'] > 0) {
+            $dead_stock[] = $stat;
+        }
+    }
+
+    return [
+        'total_value_cost' => $total_value_cost,
+        'total_units' => $total_units,
+        'out_of_stock_count' => $out_of_stock_count,
+        'product_stats' => $product_stats,
+        'dead_stock' => $dead_stock,
+    ];
+}
+
+function wppam_process_inventory_item($product)
+{
+    $id = $product->get_id();
+    $cost = (float) get_post_meta($id, '_cost_price', true);
+    if (!$cost && $product->is_type('variation')) {
+        $cost = (float) get_post_meta($product->get_parent_id(), '_cost_price', true);
+    }
+    $stock = (int) $product->get_stock_quantity();
+    $sold = (int) $product->get_total_sales();
+    $price = (float) $product->get_price();
+
+    return [
+        'id' => $id,
+        'name' => $product->get_name(),
+        'cost' => $cost,
+        'price' => $price,
+        'stock' => $stock,
+        'sold' => $sold,
+        'stock_value' => $stock * $cost,
+        'potential_profit' => $stock * ($price - $cost)
+    ];
+}
+
+// ============================
 // ADMIN MENU
 // ============================
 add_action('admin_menu', function () {
     add_menu_page('Profit Manager', 'Profit Manager', 'manage_options', 'wppam', 'wppam_dashboard', 'dashicons-chart-line');
     add_submenu_page('wppam', 'Daily Report', 'Daily Report', 'manage_options', 'wppam-daily', 'wppam_daily_report');
     add_submenu_page('wppam', 'Yearly Report', 'Yearly Report', 'manage_options', 'wppam-yearly', 'wppam_yearly_report');
+    add_submenu_page('wppam', 'Inventory Report', 'Inventory Report', 'manage_options', 'wppam-inventory', 'wppam_inventory_report');
     add_submenu_page('wppam', 'Add Expense', 'Add Expense', 'manage_options', 'wppam-add-expense', 'wppam_add_expense');
     add_submenu_page('wppam', 'Plugin Info', 'Plugin Info', 'manage_options', 'wppam-info', 'wppam_info_page');
     // Hidden detailing pages
@@ -859,6 +951,115 @@ function wppam_monthly_details_report()
 }
 
 // ============================
+// INVENTORY REPORT
+// ============================
+function wppam_inventory_report()
+{
+    $inventory = wppam_get_inventory_data();
+    ?>
+    <div class="wrap wppam-dashboard-wrapper wppam-animate">
+        <div class="wppam-header">
+            <h1>Inventory Valuation Report</h1>
+        </div>
+
+        <div class="wppam-stats-grid">
+            <div class="wppam-stat-card">
+                <div class="wppam-stat-label">Total Inventory Value (at cost)</div>
+                <div class="wppam-stat-value profit"><?php echo wc_price($inventory['total_value_cost']); ?></div>
+            </div>
+            <div class="wppam-stat-card">
+                <div class="wppam-stat-label">Total Units in Stock</div>
+                <div class="wppam-stat-value"><?php echo number_format($inventory['total_units']); ?></div>
+            </div>
+            <div class="wppam-stat-card">
+                <div class="wppam-stat-label">Out of Stock Items</div>
+                <div class="wppam-stat-value expenses"><?php echo number_format($inventory['out_of_stock_count']); ?></div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 30px;">
+            <!-- Sold vs Remaining -->
+            <div class="wppam-table-card">
+                <h3 style="padding: 20px 24px; margin: 0; border-bottom: 1px solid var(--wppam-border);">Sold vs Remaining
+                    Insight</h3>
+                <div style="overflow-x: auto;">
+                    <table class="wppam-custom-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Cost</th>
+                                <th>Price</th>
+                                <th>Sold (All Time)</th>
+                                <th>Remaining</th>
+                                <th>Current Value (Cost)</th>
+                                <th>Est. Profit (Remaining)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($inventory['product_stats'] as $stat): ?>
+                                <tr>
+                                    <td><strong><?php echo esc_html($stat['name']); ?></strong></td>
+                                    <td><?php echo wc_price($stat['cost']); ?></td>
+                                    <td><?php echo wc_price($stat['price']); ?></td>
+                                    <td><?php echo number_format($stat['sold']); ?></td>
+                                    <td>
+                                        <span
+                                            style="padding: 4px 8px; border-radius: 4px; background: <?php echo $stat['stock'] > 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'; ?>; color: <?php echo $stat['stock'] > 0 ? 'var(--wppam-success)' : 'var(--wppam-danger)'; ?>; font-weight: 700;">
+                                            <?php echo number_format($stat['stock']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo wc_price($stat['stock_value']); ?></td>
+                                    <td style="color: var(--wppam-primary); font-weight: 700;">
+                                        <?php echo wc_price($stat['potential_profit']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dead Stock -->
+            <div class="wppam-table-card">
+                <h3 style="padding: 20px 24px; margin: 0; border-bottom: 1px solid var(--wppam-border); color: var(--wppam-danger);">
+                    Dead Stock (No Sales in 30 Days)</h3>
+                <div style="overflow-x: auto;">
+                    <table class="wppam-custom-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Stock Quantity</th>
+                                <th>Value Locked (Cost)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($inventory['dead_stock']): ?>
+                                <?php foreach ($inventory['dead_stock'] as $stat): ?>
+                                    <tr>
+                                        <td><strong><?php echo esc_html($stat['name']); ?></strong></td>
+                                        <td><?php echo number_format($stat['stock']); ?></td>
+                                        <td><?php echo wc_price($stat['stock_value']); ?></td>
+                                        <td>
+                                            <a href="<?php echo get_edit_post_link($stat['id']); ?>" class="button button-small"
+                                                target="_blank">Edit Product</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4">No dead stock identified. Good job!</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+// ============================
 // CSV EXPORT
 // ============================
 add_action('admin_post_wppam_csv', function () {
@@ -1027,6 +1228,14 @@ function wppam_info_page()
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">4</span>
                             <div class="wppam-step-text">
+                                <strong>Check Inventory Value:</strong>
+                                <p>Navigate to "Inventory Report" to see your total stock value at cost and identify
+                                    dead stock.</p>
+                            </div>
+                        </div>
+                        <div class="wppam-step-item">
+                            <span class="wppam-step-number">5</span>
+                            <div class="wppam-step-text">
                                 <strong>Review Reports:</strong>
                                 <p>Visit the Dashboard, Daily Reports, and Yearly Reports to see your real-time financial
                                     health.</p>
@@ -1044,6 +1253,8 @@ function wppam_info_page()
                         </li>
                         <li><strong>Order-Level Profit Visibility:</strong> See profit data directly in the WooCommerce
                             Orders list and single order pages.</li>
+                        <li><strong>Inventory Valuation:</strong> Real-time report of total stock value at cost price.</li>
+                        <li><strong>Dead Stock ID:</strong> Automatically identify products that haven't sold in 30 days.</li>
                         <li><strong>Expense Category Management:</strong> Group your expenses for better analysis.</li>
                         <li><strong>Interactive Dashboard:</strong> Visual charts powered by Chart.js.</li>
                         <li><strong>Detailed Drill-down:</strong> See exact orders and expenses for any day or month.</li>
@@ -1081,6 +1292,16 @@ function wppam_info_page()
                         <strong>Q: Where can I see profit for a specific order?</strong>
                         <p>A: Go to WooCommerce > Orders to see the "Profit" column, or click on an order to see the
                             "Profit Breakdown" sidebar meta box.</p>
+                    </div>
+                    <div class="wppam-faq-item">
+                        <strong>Q: How is "Potential Profit" calculated in Inventory Report?</strong>
+                        <p>A: It's the difference between the current selling price and the cost price, multiplied by the
+                            remaining stock quantity.</p>
+                    </div>
+                    <div class="wppam-faq-item">
+                        <strong>Q: What is "Dead Stock"?</strong>
+                        <p>A: Any product that has zero items sold in the last 30 days but still has positive stock quantity
+                            is flagged as dead stock.</p>
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: How do I export data?</strong>

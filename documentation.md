@@ -40,6 +40,13 @@ Log any business-related expenses (Rent, Salaries, Marketing, etc.):
 - **Yearly Report**: View a month-by-month summary for the current year.
 - **Detailed View**: Click "View Details" on any report row to see exactly which products were sold or which expenses were incurred on that specific day/month.
 
+### Inventory Valuation Report
+A comprehensive report located under **Profit Manager > Inventory Report** that provides:
+- **Total Inventory Value**: The combined cost of all items currently in stock.
+- **Sold vs Remaining**: Track how many units have been sold all-time versus what's currently available.
+- **Potential Profit**: see the estimated profit if all remaining items were sold at current prices.
+- **Dead Stock Identification**: Automatically identifies products with zero sales in the last 30 days.
+
 ### Order-Level Profit Breakdown
 Monitor the profitability of individual orders directly within the WooCommerce interface:
 - **Orders List Column**: A new "Profit" column in the WooCommerce Orders list shows the net profit for each order at a glance.

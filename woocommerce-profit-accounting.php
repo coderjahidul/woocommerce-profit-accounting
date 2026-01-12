@@ -58,11 +58,32 @@ add_action('woocommerce_product_options_pricing', function () {
     ]);
 });
 
+// Add Cost field to Variations
+add_action('woocommerce_product_after_variable_attributes', function ($loop, $variation_data, $variation) {
+    woocommerce_wp_text_input([
+        'id' => '_cost_price[' . $loop . ']',
+        'label' => 'Product Cost (COGS)',
+        'value' => get_post_meta($variation->ID, '_cost_price', true),
+        'type' => 'number',
+        'custom_attributes' => ['step' => 'any'],
+        'wrapper_class' => 'form-row form-row-full',
+    ]);
+}, 10, 3);
+
+
 add_action('woocommerce_admin_process_product_object', function ($product) {
-    if (isset($_POST['_cost_price'])) {
+    if (isset($_POST['_cost_price']) && !is_array($_POST['_cost_price'])) {
         $product->update_meta_data('_cost_price', wc_clean($_POST['_cost_price']));
     }
 });
+
+// Save Cost field for Variations
+add_action('woocommerce_save_product_variation', function ($variation_id, $i) {
+    if (isset($_POST['_cost_price'][$i])) {
+        update_post_meta($variation_id, '_cost_price', wc_clean($_POST['_cost_price'][$i]));
+    }
+}, 10, 2);
+
 
 // ============================
 // REVENUE
@@ -500,10 +521,25 @@ function wppam_daily_details_report()
 // ============================
 function wppam_yearly_report()
 {
+    $selected_year = isset($_GET['report_year']) ? intval($_GET['report_year']) : (int) date('Y');
     ?>
     <div class="wrap wppam-dashboard-wrapper wppam-animate">
         <div class="wppam-header">
-            <h1>Yearly Financial Report (<?php echo date('Y'); ?>)</h1>
+            <h1>Yearly Financial Report (<?php echo $selected_year; ?>)</h1>
+            <div class="wppam-filters">
+                <form method="get">
+                    <input type="hidden" name="page" value="wppam-yearly">
+                    <select name="report_year" onchange="this.form.submit()" class="wppam-select"
+                        style="width: auto; min-width: 120px;">
+                        <?php
+                        $current_year = (int) date('Y');
+                        for ($y = $current_year; $y >= $current_year - 5; $y--) {
+                            printf('<option value="%d" %s>%d</option>', $y, selected($selected_year, $y, false), $y);
+                        }
+                        ?>
+                    </select>
+                </form>
+            </div>
         </div>
 
         <div class="wppam-table-card">
@@ -521,7 +557,7 @@ function wppam_yearly_report()
                 <tbody>
                     <?php
                     for ($m = 1; $m <= 12; $m++) {
-                        $data = wppam_calculate_profit(date('Y'), $m);
+                        $data = wppam_calculate_profit($selected_year, $m);
                         ?>
                         <tr>
                             <td><strong><?php echo date('F', mktime(0, 0, 0, $m, 1)); ?></strong></td>
@@ -533,7 +569,7 @@ function wppam_yearly_report()
                                 <?php echo wc_price($data['profit']); ?>
                             </td>
                             <td>
-                                <a href="<?php echo admin_url('admin.php?page=wppam-monthly-details&year=' . date('Y') . '&month=' . $m); ?>"
+                                <a href="<?php echo admin_url('admin.php?page=wppam-monthly-details&year=' . $selected_year . '&month=' . $m); ?>"
                                     class="button button-small">View Details</a>
                             </td>
                         </tr>
@@ -693,13 +729,14 @@ function wppam_monthly_details_report()
 // CSV EXPORT
 // ============================
 add_action('admin_post_wppam_csv', function () {
+    $year = isset($_GET['year']) ? intval($_GET['year']) : (int) date('Y');
     header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename=yearly-profit.csv');
+    header('Content-Disposition: attachment; filename=yearly-profit-' . $year . '.csv');
 
     $out = fopen('php://output', 'w');
     fputcsv($out, ['Month', 'Profit']);
     for ($m = 1; $m <= 12; $m++) {
-        $data = wppam_calculate_profit(date('Y'), $m);
+        $data = wppam_calculate_profit($year, $m);
         fputcsv($out, [$m, $data['profit']]);
     }
     fclose($out);
@@ -786,9 +823,10 @@ add_action('admin_footer', function () {
 add_action('admin_post_wppam_pdf', function () {
     if (!class_exists('Dompdf\Dompdf'))
         return;
-    $html = '<h1>Yearly Profit Report</h1><table border="1" width="100%">';
+    $year = isset($_GET['year']) ? intval($_GET['year']) : (int) date('Y');
+    $html = '<h1>Yearly Profit Report (' . $year . ')</h1><table border="1" width="100%">';
     for ($m = 1; $m <= 12; $m++) {
-        $data = wppam_calculate_profit(date('Y'), $m);
+        $data = wppam_calculate_profit($year, $m);
         $html .= '<tr><td>' . date('F', mktime(0, 0, 0, $m, 1)) . '</td><td>' . $data['profit'] . '</td></tr>';
     }
     $html .= '</table>';
@@ -796,7 +834,7 @@ add_action('admin_post_wppam_pdf', function () {
     $dompdf = new Dompdf\Dompdf();
     $dompdf->loadHtml($html);
     $dompdf->render();
-    $dompdf->stream('profit-report.pdf');
+    $dompdf->stream('profit-report-' . $year . '.pdf');
     exit;
 });
 
@@ -806,7 +844,8 @@ add_action('admin_post_wppam_pdf', function () {
 /**
  * Display the Plugin Info & Documentation page.
  */
-function wppam_info_page() {
+function wppam_info_page()
+{
     ?>
     <div class="wrap wppam-dashboard-wrapper wppam-animate">
         <div class="wppam-header">
@@ -815,7 +854,8 @@ function wppam_info_page() {
 
         <div class="wppam-tabs-container">
             <div class="wppam-tabs-nav">
-                <button class="wppam-tab-btn active" onclick="wppamOpenTab(event, 'getting-started')">🚀 Getting Started</button>
+                <button class="wppam-tab-btn active" onclick="wppamOpenTab(event, 'getting-started')">🚀 Getting
+                    Started</button>
                 <button class="wppam-tab-btn" onclick="wppamOpenTab(event, 'features')">✨ Features</button>
                 <button class="wppam-tab-btn" onclick="wppamOpenTab(event, 'calculations')">🧮 Calculations</button>
                 <button class="wppam-tab-btn" onclick="wppamOpenTab(event, 'faq')">❓ FAQ</button>
@@ -830,21 +870,25 @@ function wppam_info_page() {
                             <span class="wppam-step-number">1</span>
                             <div class="wppam-step-text">
                                 <strong>Define Product Costs:</strong>
-                                <p>Go to your WooCommerce products. In the "General" tab, you'll find a new field <strong>"Product Cost (COGS)"</strong>. Enter your purchase price there.</p>
+                                <p>Go to your WooCommerce products. In the "General" tab, you'll find a new field
+                                    <strong>"Product Cost (COGS)"</strong>. Enter your purchase price there.
+                                </p>
                             </div>
                         </div>
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">2</span>
                             <div class="wppam-step-text">
                                 <strong>Log Business Expenses:</strong>
-                                <p>Navigate to the "Add Expense" page to record utilities, rent, or salaries. These will be deducted from your net profit.</p>
+                                <p>Navigate to the "Add Expense" page to record utilities, rent, or salaries. These will be
+                                    deducted from your net profit.</p>
                             </div>
                         </div>
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">3</span>
                             <div class="wppam-step-text">
                                 <strong>Review Reports:</strong>
-                                <p>Visit the Dashboard, Daily Reports, and Yearly Reports to see your real-time financial health.</p>
+                                <p>Visit the Dashboard, Daily Reports, and Yearly Reports to see your real-time financial
+                                    health.</p>
                             </div>
                         </div>
                     </div>
@@ -855,7 +899,8 @@ function wppam_info_page() {
                 <div class="wppam-table-card" style="padding: 30px;">
                     <h3 style="margin-top:0; color: var(--wppam-primary);">Key Features</h3>
                     <ul class="wppam-feature-list">
-                        <li><strong>Automated COGS Calculation:</strong> Automatically calculates the cost of every sale.</li>
+                        <li><strong>Automated COGS Calculation:</strong> Automatically calculates the cost of every sale.
+                        </li>
                         <li><strong>Expense Category Management:</strong> Group your expenses for better analysis.</li>
                         <li><strong>Interactive Dashboard:</strong> Visual charts powered by Chart.js.</li>
                         <li><strong>Detailed Drill-down:</strong> See exact orders and expenses for any day or month.</li>
@@ -881,137 +926,157 @@ function wppam_info_page() {
                     <h3 style="margin-top:0; color: var(--wppam-primary);">FAQs</h3>
                     <div class="wppam-faq-item">
                         <strong>Q: What happens if I forget to set a product cost?</strong>
-                        <p>A: The plugin will treat the cost as 0.00, meaning the entire sale amount will be counted as gross profit before expenses.</p>
+                        <p>A: The plugin will treat the cost as 0.00, meaning the entire sale amount will be counted as
+                            gross profit before expenses.</p>
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: Does it support variable products?</strong>
-                        <p>A: Yes! You can set individual costs for each variation. If a variation cost is missing, it skips to the parent cost.</p>
+                        <p>A: Yes! You can set individual costs for each variation. If a variation cost is missing, it skips
+                            to the parent cost.</p>
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: How do I export data?</strong>
-                        <p>A: Look for the export buttons on the Dashboard or Report pages (feature coming soon/basic support available via specific actions).</p>
+                        <p>A: Look for the export buttons on the Dashboard or Report pages (feature coming soon/basic
+                            support available via specific actions).</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="wppam-footer-info" style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-             <div class="wppam-table-card" style="padding: 20px;">
+            <div class="wppam-table-card" style="padding: 20px;">
                 <h4 style="margin: 0 0 10px 0;">Technical Info</h4>
                 <small>Version: 1.1.0 | Text Domain: woocommerce-profit-accounting</small>
-             </div>
-             <div class="wppam-table-card" style="padding: 20px; text-align: right;">
-                <a href="https://www.facebook.com/nixsoftware" target="_blank" class="wppam-btn-primary" style="text-decoration: none;">Support & Updates</a>
-             </div>
+            </div>
+            <div class="wppam-table-card" style="padding: 20px; text-align: right;">
+                <a href="https://www.facebook.com/nixsoftware" target="_blank" class="wppam-btn-primary"
+                    style="text-decoration: none;">Support & Updates</a>
+            </div>
         </div>
     </div>
 
     <script>
-    function wppamOpenTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("wppam-tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-            tabcontent[i].classList.remove("active");
+        function wppamOpenTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("wppam-tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("wppam-tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.className += " active";
         }
-        tablinks = document.getElementsByClassName("wppam-tab-btn");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.className += " active";
-    }
     </script>
 
     <style>
-    .wppam-tabs-nav {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    .wppam-tab-btn {
-        padding: 12px 20px;
-        background: #f1f5f9;
-        border: 1px solid var(--wppam-border);
-        border-radius: 8px;
-        cursor: pointer;
-        font-family: 'Outfit', sans-serif;
-        font-weight: 600;
-        transition: all 0.2s;
-        color: var(--wppam-text-muted);
-    }
-    .wppam-tab-btn:hover {
-        background: #e2e8f0;
-    }
-    .wppam-tab-btn.active {
-        background: var(--wppam-primary);
-        color: white;
-        border-color: var(--wppam-primary);
-    }
-    .wppam-tab-content {
-        display: none;
-        animation: fadeIn 0.3s ease-out;
-    }
-    .wppam-tab-content.active {
-        display: block;
-    }
-    .wppam-step-list {
-        margin-top: 20px;
-    }
-    .wppam-step-item {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-    .wppam-step-number {
-        width: 32px;
-        height: 32px;
-        background: var(--wppam-primary);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        flex-shrink: 0;
-    }
-    .wppam-step-text strong {
-        display: block;
-        margin-bottom: 5px;
-        color: var(--wppam-text-main);
-    }
-    .wppam-step-text p {
-        margin: 0;
-        color: var(--wppam-text-muted);
-    }
-    .wppam-feature-list {
-        list-style: none;
-        padding: 0;
-    }
-    .wppam-feature-list li {
-        padding: 10px 0;
-        border-bottom: 1px solid var(--wppam-border);
-    }
-    .wppam-feature-list li:last-child {
-        border-bottom: none;
-    }
-    .wppam-calc-box {
-        background: #f8fafc;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 4px solid var(--wppam-primary);
-        margin-bottom: 20px;
-    }
-    .wppam-faq-item {
-        margin-bottom: 25px;
-    }
-    .wppam-faq-item strong {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 16px;
-        color: var(--wppam-text-main);
-    }
+        .wppam-tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .wppam-tab-btn {
+            padding: 12px 20px;
+            background: #f1f5f9;
+            border: 1px solid var(--wppam-border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: var(--wppam-text-muted);
+        }
+
+        .wppam-tab-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .wppam-tab-btn.active {
+            background: var(--wppam-primary);
+            color: white;
+            border-color: var(--wppam-primary);
+        }
+
+        .wppam-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .wppam-tab-content.active {
+            display: block;
+        }
+
+        .wppam-step-list {
+            margin-top: 20px;
+        }
+
+        .wppam-step-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .wppam-step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--wppam-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .wppam-step-text strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--wppam-text-main);
+        }
+
+        .wppam-step-text p {
+            margin: 0;
+            color: var(--wppam-text-muted);
+        }
+
+        .wppam-feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .wppam-feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--wppam-border);
+        }
+
+        .wppam-feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .wppam-calc-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--wppam-primary);
+            margin-bottom: 20px;
+        }
+
+        .wppam-faq-item {
+            margin-bottom: 25px;
+        }
+
+        .wppam-faq-item strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: var(--wppam-text-main);
+        }
     </style>
     <?php
 }

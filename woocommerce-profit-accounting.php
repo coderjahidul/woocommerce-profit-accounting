@@ -53,6 +53,7 @@ add_action('woocommerce_product_options_pricing', function () {
     woocommerce_wp_text_input([
         'id' => '_cost_price',
         'label' => 'Product Cost (COGS)',
+        'placeholder' => 'Enter product cost',
         'type' => 'number',
         'custom_attributes' => ['step' => 'any']
     ]);
@@ -63,6 +64,7 @@ add_action('woocommerce_product_after_variable_attributes', function ($loop, $va
     woocommerce_wp_text_input([
         'id' => '_cost_price[' . $loop . ']',
         'label' => 'Product Cost (COGS)',
+        'placeholder' => 'Enter product cost',
         'value' => get_post_meta($variation->ID, '_cost_price', true),
         'type' => 'number',
         'custom_attributes' => ['step' => 'any'],

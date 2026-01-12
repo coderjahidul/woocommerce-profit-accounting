@@ -19,8 +19,20 @@ if (!defined('ABSPATH'))
 // ASSETS & ENQUEUE
 // ============================
 add_action('admin_enqueue_scripts', function ($hook) {
-    if (strpos($hook, 'wppam') === false)
+    if (strpos($hook, 'wppam') === false && strpos($hook, 'edit.php') === false && strpos($hook, 'wc-orders') === false) {
+        if (get_post_type() !== 'shop_order' && !isset($_GET['page']) || $_GET['page'] !== 'wc-orders') {
+            return;
+        }
+    }
+    
+    // Check if it's the orders list or single order page
+    $is_order_page = (strpos($hook, 'edit.php') !== false && isset($_GET['post_type']) && $_GET['post_type'] === 'shop_order') || 
+                     (strpos($hook, 'post.php') !== false && isset($_GET['post']) && get_post_type($_GET['post']) === 'shop_order') ||
+                     (strpos($hook, 'wc-orders') !== false);
+
+    if (strpos($hook, 'wppam') === false && !$is_order_page) {
         return;
+    }
 
     wp_enqueue_style('wppam-google-fonts', 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap', [], null);
     wp_enqueue_style('wppam-admin-style', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css', [], '1.0.0');
@@ -151,6 +163,124 @@ function wppam_get_monthly_cogs($year, $month)
         }
     }
     return $total_cogs;
+}
+
+// ============================
+// ORDER PROFIT HELPERS
+// ============================
+/**
+ * Calculate profit data for a single order.
+ * 
+ * @param WC_Order|int $order
+ * @return array
+ */
+function wppam_get_order_profit_data($order)
+{
+    if (!$order instanceof WC_Order) {
+        $order = wc_get_order($order);
+    }
+    if (!$order) {
+        return ['revenue' => 0, 'cogs' => 0, 'profit' => 0];
+    }
+
+    $revenue = (float) $order->get_total();
+    $cogs = 0;
+    foreach ($order->get_items() as $item) {
+        $product_id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
+        $cost = get_post_meta($product_id, '_cost_price', true);
+        if (!$cost && $item->get_variation_id()) {
+            $cost = get_post_meta($item->get_product_id(), '_cost_price', true);
+        }
+        $cogs += ((float) $cost * $item->get_quantity());
+    }
+
+    return [
+        'revenue' => $revenue,
+        'cogs' => $cogs,
+        'profit' => $revenue - $cogs
+    ];
+}
+
+// ============================
+// ORDER LIST COLUMNS
+// ============================
+add_filter('manage_edit-shop_order_columns', 'wppam_add_profit_column');
+add_filter('manage_woocommerce_page_wc-orders_columns', 'wppam_add_profit_column');
+
+function wppam_add_profit_column($columns)
+{
+    $new_columns = [];
+    foreach ($columns as $column_name => $column_info) {
+        $new_columns[$column_name] = $column_info;
+        if ('order_total' === $column_name) {
+            $new_columns['wppam_profit'] = 'Profit';
+        }
+    }
+    return $new_columns;
+}
+
+add_action('manage_shop_order_posts_custom_column', 'wppam_display_profit_column', 10, 1);
+add_action('manage_woocommerce_page_wc-orders_custom_column', 'wppam_display_profit_column', 10, 2);
+
+function wppam_display_profit_column($column, $order_or_id = null)
+{
+    if ('wppam_profit' === $column) {
+        $order = ($order_or_id instanceof WC_Order) ? $order_or_id : wc_get_order($order_or_id);
+        if (!$order) {
+            global $post;
+            $order = wc_get_order($post->ID);
+        }
+
+        if ($order) {
+            $data = wppam_get_order_profit_data($order);
+            $color = $data['profit'] >= 0 ? 'var(--wppam-success, #22c55e)' : 'var(--wppam-danger, #ef4444)';
+            echo '<span style="font-weight:700; color:' . $color . '">' . wc_price($data['profit']) . '</span>';
+        }
+    }
+}
+
+// ============================
+// SINGLE ORDER META BOX
+// ============================
+add_action('add_meta_boxes', function () {
+    $screens = ['shop_order', 'woocommerce_page_wc-orders'];
+    foreach ($screens as $screen) {
+        add_meta_box(
+            'wppam_order_profit_breakdown',
+            'Profit Breakdown',
+            'wppam_order_profit_meta_box_html',
+            $screen,
+            'side',
+            'high'
+        );
+    }
+});
+
+function wppam_order_profit_meta_box_html($post_or_order)
+{
+    $order = ($post_or_order instanceof WC_Order) ? $post_or_order : wc_get_order($post_or_order->ID);
+    if (!$order) return;
+
+    $data = wppam_get_order_profit_data($order);
+    ?>
+    <div class="wppam-meta-box-content">
+        <p style="display: flex; justify-content: space-between; margin: 8px 0;">
+            <span>Revenue:</span>
+            <span><?php echo wc_price($data['revenue']); ?></span>
+        </p>
+        <p style="display: flex; justify-content: space-between; margin: 8px 0;">
+            <span>COGS:</span>
+            <span><?php echo wc_price($data['cogs']); ?></span>
+        </p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+        <p style="display: flex; justify-content: space-between; margin: 8px 0; font-weight: 700;">
+            <span>Net Profit:</span>
+            <span style="color: <?php echo $data['profit'] >= 0 ? '#22c55e' : '#ef4444'; ?>">
+                <?php echo wc_price($data['profit']); ?>
+            </span>
+        </p>
+    </div>
+    <?php
 }
 
 // ============================
@@ -307,6 +437,7 @@ function wppam_add_expense()
                         <option>Salary</option>
                         <option>Godown</option>
                         <option>Marketing</option>
+                        <option>Shipping</option>
                         <option>Utility</option>
                         <option>Other</option>
                     </select>
@@ -888,6 +1019,14 @@ function wppam_info_page()
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">3</span>
                             <div class="wppam-step-text">
+                                <strong>Check Order Profit:</strong>
+                                <p>Open any WooCommerce order or check the orders list. A new "Profit" column and meta
+                                    box show the profitability of each order.</p>
+                            </div>
+                        </div>
+                        <div class="wppam-step-item">
+                            <span class="wppam-step-number">4</span>
+                            <div class="wppam-step-text">
                                 <strong>Review Reports:</strong>
                                 <p>Visit the Dashboard, Daily Reports, and Yearly Reports to see your real-time financial
                                     health.</p>
@@ -903,10 +1042,12 @@ function wppam_info_page()
                     <ul class="wppam-feature-list">
                         <li><strong>Automated COGS Calculation:</strong> Automatically calculates the cost of every sale.
                         </li>
+                        <li><strong>Order-Level Profit Visibility:</strong> See profit data directly in the WooCommerce
+                            Orders list and single order pages.</li>
                         <li><strong>Expense Category Management:</strong> Group your expenses for better analysis.</li>
                         <li><strong>Interactive Dashboard:</strong> Visual charts powered by Chart.js.</li>
                         <li><strong>Detailed Drill-down:</strong> See exact orders and expenses for any day or month.</li>
-                        <li><strong>CSV & PDF Export:</strong> Download your data for archival or accounting.</li>
+                        <li><strong>Data Export:</strong> Download your reports in CSV or PDF format for accounting.</li>
                     </ul>
                 </div>
             </div>
@@ -933,13 +1074,18 @@ function wppam_info_page()
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: Does it support variable products?</strong>
-                        <p>A: Yes! You can set individual costs for each variation. If a variation cost is missing, it skips
-                            to the parent cost.</p>
+                        <p>A: Yes! You can set individual costs for each variation. If a variation cost is missing, it
+                            falls back to the parent product's cost.</p>
+                    </div>
+                    <div class="wppam-faq-item">
+                        <strong>Q: Where can I see profit for a specific order?</strong>
+                        <p>A: Go to WooCommerce > Orders to see the "Profit" column, or click on an order to see the
+                            "Profit Breakdown" sidebar meta box.</p>
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: How do I export data?</strong>
-                        <p>A: Look for the export buttons on the Dashboard or Report pages (feature coming soon/basic
-                            support available via specific actions).</p>
+                        <p>A: Look for the export buttons on the Dashboard or Report pages to generate CSV or PDF
+                            files.</p>
                     </div>
                 </div>
             </div>
@@ -950,9 +1096,12 @@ function wppam_info_page()
                 <h4 style="margin: 0 0 10px 0;">Technical Info</h4>
                 <small>Version: 1.1.0 | Text Domain: woocommerce-profit-accounting</small>
             </div>
-            <div class="wppam-table-card" style="padding: 20px; text-align: right;">
-                <a href="https://www.facebook.com/nixsoftware" target="_blank" class="wppam-btn-primary"
-                    style="text-decoration: none;">Support & Updates</a>
+            <div class="wppam-table-card" style="padding: 20px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 15px;">
+                <span>Need help with setup?</span>
+                <a href="https://github.com/coderjahidul/woocommerce-profit-accounting" target="_blank" class="wppam-btn-primary"
+                    style="text-decoration: none;">GitHub Repo</a>
+                <a href="https://jahidulsabuz.com" target="_blank" class="wppam-btn-primary"
+                    style="text-decoration: none; background: #22c55e !important;">Support Website</a>
             </div>
         </div>
     </div>

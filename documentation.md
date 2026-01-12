@@ -40,6 +40,12 @@ Log any business-related expenses (Rent, Salaries, Marketing, etc.):
 - **Yearly Report**: View a month-by-month summary for the current year.
 - **Detailed View**: Click "View Details" on any report row to see exactly which products were sold or which expenses were incurred on that specific day/month.
 
+### Order-Level Profit Breakdown
+Monitor the profitability of individual orders directly within the WooCommerce interface:
+- **Orders List Column**: A new "Profit" column in the WooCommerce Orders list shows the net profit for each order at a glance.
+- **Single Order Meta Box**: View a detailed "Profit Breakdown" on the single order page, showing Revenue, COGS, and Net Profit for that specific order.
+- **Color Coding**: Profit values are color-coded (Green for profit, Red for loss) for quick identification.
+
 ---
 
 ## 3. Data Integration & Calculations

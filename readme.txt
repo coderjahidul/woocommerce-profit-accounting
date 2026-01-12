@@ -3,7 +3,7 @@ Contributors: jahidulsabuz
 Tags: woocommerce, profit, accounting, cogs, expense, reports
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 1.1.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -42,6 +42,12 @@ Go to any product edit page -> General tab -> Pricing section. You will see a "P
 3. Adding a new expense.
 
 == Changelog ==
+
+= 2.0.0 =
+* Major internal refactoring for scalability.
+* Added Expense Editing and Deletion capability.
+* Enhanced Monthly Reports with per-product revenue and profit analysis.
+* Full "Buttery Smooth" UI overhaul across all admin pages.
 
 = 1.1.0 =
 * Added comprehensive plugin information.

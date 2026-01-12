@@ -68,10 +68,21 @@
     color: var(--wppam-text-main);
 }
 
-.wppam-stat-value.revenue { color: var(--wppam-success); }
-.wppam-stat-value.expenses { color: var(--wppam-danger); }
-.wppam-stat-value.cogs { color: var(--wppam-warning); }
-.wppam-stat-value.profit { color: var(--wppam-primary); }
+.wppam-stat-value.revenue {
+    color: var(--wppam-success);
+}
+
+.wppam-stat-value.expenses {
+    color: var(--wppam-danger);
+}
+
+.wppam-stat-value.cogs {
+    color: var(--wppam-warning);
+}
+
+.wppam-stat-value.profit {
+    color: var(--wppam-primary);
+}
 
 /* Chart Section */
 .wppam-chart-container {
@@ -141,7 +152,8 @@
     color: var(--wppam-text-main);
 }
 
-.wppam-input, .wppam-select {
+.wppam-input,
+.wppam-select {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid var(--wppam-border);
@@ -150,7 +162,8 @@
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.wppam-input:focus, .wppam-select:focus {
+.wppam-input:focus,
+.wppam-select:focus {
     outline: none;
     border-color: var(--wppam-primary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -173,10 +186,207 @@
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .wppam-animate {
     animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Secondary Button */
+.wppam-btn-secondary {
+    background: white !important;
+    color: var(--wppam-text-main) !important;
+    border: 1px solid var(--wppam-border) !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.2s !important;
+    text-decoration: none !important;
+    display: inline-block;
+}
+
+.wppam-btn-secondary:hover {
+    background: #f8fafc !important;
+    border-color: var(--wppam-primary) !important;
+    color: var(--wppam-primary) !important;
+}
+
+/* Layout Utilities */
+.wppam-grid-2 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.wppam-grid-1-3 {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+}
+
+.wppam-mt-30 {
+    margin-top: 30px;
+}
+
+.wppam-mt-0 {
+    margin-top: 0 !important;
+}
+
+.wppam-p-24 {
+    padding: 24px !important;
+}
+
+.wppam-p-30 {
+    padding: 30px !important;
+}
+
+/* Tabs System */
+.wppam-tabs-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--wppam-border);
+    padding-bottom: 1px;
+}
+
+.wppam-tab-btn {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--wppam-text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.wppam-tab-btn:hover {
+    color: var(--wppam-primary);
+}
+
+.wppam-tab-btn.active {
+    color: var(--wppam-primary);
+    border-bottom-color: var(--wppam-primary);
+}
+
+.wppam-tab-content {
+    display: none;
+}
+
+.wppam-tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Step List */
+.wppam-step-list {
+    margin-top: 25px;
+}
+
+.wppam-step-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.wppam-step-number {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--wppam-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.wppam-step-text strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+/* Badges */
+.wppam-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.wppam-badge-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--wppam-success);
+}
+
+.wppam-badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--wppam-danger);
+}
+
+/* Feature List */
+.wppam-feature-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.wppam-feature-list li {
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid var(--wppam-primary);
+}
+
+/* Calc Box */
+.wppam-calc-box {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.wppam-calc-box code {
+    color: #38bdf8;
+    background: transparent;
+    font-size: 16px;
+}
+
+/* Footer Info */
+.wppam-footer-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Typography Utility */
+.wppam-text-success {
+    color: var(--wppam-success) !important;
+}
+
+.wppam-text-danger {
+    color: var(--wppam-danger) !important;
+}
+
+.wppam-text-primary {
+    color: var(--wppam-primary) !important;
+}
+
+.wppam-text-bold {
+    font-weight: 700 !important;
 }

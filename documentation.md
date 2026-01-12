@@ -30,15 +30,19 @@ The main dashboard provides a quick snapshot of your business performance for th
 - **Net Profit**: Revenue - (COGS + Expenses).
 
 ### Expense Management
-Log any business-related expenses (Rent, Salaries, Marketing, etc.):
+Log and manage any business-related expenses (Rent, Salaries, Marketing, etc.):
 1. Click on **Add Expense**.
-2. Fill in the Title, Category, Amount, and Date.
-3. These expenses will be automatically deducted from your profit calculations in reports.
+2. **Add**: Fill in the Category, Amount, Date, and Note to save a new expense.
+3. **Edit**: Click the "Edit" button next to any recent expense to modify its details.
+4. **Delete**: Click the "Delete" button to permanently remove an entry (requires confirmation).
+These costs are automatically deducted from your profit calculations.
 
 ### Daily & Yearly Reports
 - **Daily Report**: View a day-by-day breakdown of your finances for any selected month.
 - **Yearly Report**: View a month-by-month summary for the current year.
-- **Detailed View**: Click "View Details" on any report row to see exactly which products were sold or which expenses were incurred on that specific day/month.
+- **Detailed View**: Click "View Details" on any report row to see a deep dive:
+    - **Daily**: See orders received and specific expenses incurred.
+    - **Monthly**: See product-level aggregation with **Qty Sold**, **Total Revenue**, **Total Cost**, and **Net Profit** per item.
 
 ### Inventory Valuation Report
 A comprehensive report located under **Profit Manager > Inventory Report** that provides:
@@ -80,6 +84,12 @@ You can export your yearly performance data:
 ---
 
 ## 5. Developer Information
+
+### File Structure
+The plugin follows a modular, feature-wise file structure for better maintainability:
+- `/admin/`: UI components, reports, and export logic.
+- `/includes/`: Core business logic, calculators, and constants.
+- `/assets/`: CSS styles and admin scripts.
 
 ### Database Tables
 - `{prefix}wppam_expenses`: Stores expense logs.

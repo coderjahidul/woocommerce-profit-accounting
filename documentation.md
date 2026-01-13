@@ -107,4 +107,4 @@ The plugin follows a modular, feature-wise file structure for better maintainabi
 ---
 
 ## Support
-For support, visit [jahidulsabuz.com](https://jahidulsabuz.com).
+For support, visit [github.com/coderjahidul](https://github.com/coderjahidul).

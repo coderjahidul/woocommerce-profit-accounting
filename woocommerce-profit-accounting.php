@@ -42,17 +42,17 @@ if (is_admin()) {
     require_once WPPAM_PATH . 'admin/admin-menu.php';
     require_once WPPAM_PATH . 'admin/admin-meta-boxes.php';
     require_once WPPAM_PATH . 'admin/admin-order-list.php';
-    
+
     // UI Pages
     require_once WPPAM_PATH . 'admin/admin-dashboard.php';
     require_once WPPAM_PATH . 'admin/admin-expenses.php';
     require_once WPPAM_PATH . 'admin/admin-info.php';
-    
+
     // Reports
     require_once WPPAM_PATH . 'admin/reports/report-daily.php';
     require_once WPPAM_PATH . 'admin/reports/report-yearly.php';
     require_once WPPAM_PATH . 'admin/reports/report-inventory.php';
-    
+
     // Exports
     require_once WPPAM_PATH . 'admin/exports/export-csv.php';
     require_once WPPAM_PATH . 'admin/exports/export-pdf.php';

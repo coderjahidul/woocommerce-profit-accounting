@@ -23,11 +23,10 @@ To get accurate profit reports, you must provide cost data for your products.
 ## 2. Core Features
 
 ### Dashboard Overview
-The main dashboard provides a quick snapshot of your business performance for the current month:
-- **Monthly Revenue**: Total sales from 'Processing' and 'Completed' orders.
-- **Product COGS**: Total cost of items sold.
-- **Expenses**: Total business costs logged.
-- **Net Profit**: Revenue - (COGS + Expenses).
+The main dashboard provides a quick snapshot of your business performance:
+- **Financial Statistics (Monthly)**: Real-time calculation of Revenue, COGS, Operating Expenses, and Net Profit for the current month.
+- **Performance Trend Chart**: A visual line graph comparing Monthly Profit vs. Revenue over the course of the year.
+- **Delivery Status Chart**: A dynamic doughnut chart showing the distribution of order statuses (Completed, Processing, On-hold, etc.) for a selectable period.
 
 ### Expense Management
 Log and manage any business-related expenses (Rent, Salaries, Marketing, etc.):
@@ -56,6 +55,13 @@ Monitor the profitability of individual orders directly within the WooCommerce i
 - **Orders List Column**: A new "Profit" column in the WooCommerce Orders list shows the net profit for each order at a glance.
 - **Single Order Meta Box**: View a detailed "Profit Breakdown" on the single order page, showing Revenue, COGS, and Net Profit for that specific order.
 - **Color Coding**: Profit values are color-coded (Green for profit, Red for loss) for quick identification.
+
+### Operational Insights (Delivery Status)
+Located on the main dashboard, this feature focuses on your order fulfillment performance:
+- **Period Filter**: A dedicated selector allows you to filter the delivery breakdown by Today, Yesterday, Last 7 Days, Last 30 Days, This Month, or Last Month.
+- **AJAX Refresh**: The chart updates instantly via AJAX without reloading the entire dashboard page.
+- **Percentage Breakdown**: The interactive legend displays both the raw order count and the percentage of total orders for each status.
+- **Delivered Rate**: Easily track what percentage of your total orders have been successfully 'Completed / Delivered' for any chosen period.
 
 ---
 

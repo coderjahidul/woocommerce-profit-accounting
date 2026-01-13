@@ -42,7 +42,8 @@ function wppam_info_page()
                             <span class="wppam-step-number">2</span>
                             <div class="wppam-step-text">
                                 <strong>Log & Manage Expenses:</strong>
-                                <p>Navigate to "Add Expense" to record business costs. You can also **Edit** or **Delete** existing entries from the recent expenses list.</p>
+                                <p>Navigate to "Add Expense" to record business costs. You can also **Edit** or **Delete**
+                                    existing entries from the recent expenses list.</p>
                             </div>
                         </div>
                         <div class="wppam-step-item">
@@ -56,17 +57,17 @@ function wppam_info_page()
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">4</span>
                             <div class="wppam-step-text">
-                                <strong>Check Inventory Value:</strong>
-                                <p>Navigate to "Inventory Report" to see your total stock value at cost and identify
-                                    dead stock.</p>
+                                <strong>Track Delivery Performance:</strong>
+                                <p>On the Dashboard, use the <strong>Delivery Period</strong> filter to see your fulfillment
+                                    rates and status distribution in real-time.</p>
                             </div>
                         </div>
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">5</span>
                             <div class="wppam-step-text">
-                                <strong>Review Reports:</strong>
-                                <p>Visit the Dashboard, Daily Reports, and Yearly Reports to see your real-time financial
-                                    health.</p>
+                                <strong>Check Inventory & Reports:</strong>
+                                <p>Review Inventory reports for stock value and visit Daily/Yearly summaries for deep
+                                    financial analysis.</p>
                             </div>
                         </div>
                     </div>
@@ -82,10 +83,16 @@ function wppam_info_page()
                         <li><strong>Order-Level Profit Visibility:</strong> See profit data directly in the WooCommerce
                             Orders list and single order pages.</li>
                         <li><strong>Inventory Valuation:</strong> Real-time report of total stock value at cost price.</li>
-                        <li><strong>Dead Stock ID:</strong> Automatically identify products that haven't sold in 30 days.</li>
-                        <li><strong>Expense Management:</strong> Add, edit, and delete business costs categorized for analysis.</li>
-                        <li><strong>Interactive Dashboard:</strong> Visual charts powered by Chart.js.</li>
-                        <li><strong>Detailed Drill-down:</strong> See exact products sold, per-item profit, and expense lists for any day or month.</li>
+                        <li><strong>Dead Stock ID:</strong> Automatically identify products that haven't sold in 30 days.
+                        </li>
+                        <li><strong>Expense Management:</strong> Add, edit, and delete business costs categorized for
+                            analysis.</li>
+                        <li><strong>Interactive Dashboard:</strong> Visual financial charts and operational doughnut charts
+                            powered by Chart.js.</li>
+                        <li><strong>AJAX-Powered Filtering:</strong> Filter delivery status performance (Today, Last 7 Days,
+                            etc.) instantly without page reloads.</li>
+                        <li><strong>Detailed Drill-down:</strong> See exact products sold, per-item profit, and expense
+                            lists for any day or month.</li>
                         <li><strong>Data Export:</strong> Download your reports in CSV or PDF format for accounting.</li>
                     </ul>
                 </div>
@@ -113,7 +120,8 @@ function wppam_info_page()
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: How do I correct an wrong expense?</strong>
-                        <p>A: Go to the "Add Expense" page. In the "Recent Expenses" table, click **Edit** to modify the amount or category, or **Delete** to remove it permanently.</p>
+                        <p>A: Go to the "Add Expense" page. In the "Recent Expenses" table, click **Edit** to modify the
+                            amount or category, or **Delete** to remove it permanently.</p>
                     </div>
                     <div class="wppam-faq-item">
                         <strong>Q: Does it support variable products?</strong>
@@ -152,8 +160,10 @@ function wppam_info_page()
             <div class="wppam-table-card wppam-p-24">
                 <h4 class="wppam-mt-0">Need Help?</h4>
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <a href="https://github.com/coderjahidul/woocommerce-profit-accounting/issues" target="_blank" style="text-decoration: none; color: var(--wppam-primary); font-weight: 600;">GitHub Issues</a>
-                    <a href="https://github.com/coderjahidul/" target="_blank" class="wppam-btn-primary" style="font-size: 12px; padding: 8px 15px;">Official Support</a>
+                    <a href="https://github.com/coderjahidul/woocommerce-profit-accounting/issues" target="_blank"
+                        style="text-decoration: none; color: var(--wppam-primary); font-weight: 600;">GitHub Issues</a>
+                    <a href="https://github.com/coderjahidul/" target="_blank" class="wppam-btn-primary"
+                        style="font-size: 12px; padding: 8px 15px;">Official Support</a>
                 </div>
             </div>
         </div>

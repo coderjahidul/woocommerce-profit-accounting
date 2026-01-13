@@ -23,8 +23,8 @@ function wppam_yearly_report()
                         <?php endfor; ?>
                     </select>
                 </form>
-                <a href="<?php echo admin_url('admin-post.php?action=wppam_csv&year=' . $year); ?>" class="wppam-btn-secondary"
-                    style="font-size: 13px;">Export CSV</a>
+                <a href="<?php echo admin_url('admin-post.php?action=wppam_csv&year=' . $year); ?>"
+                    class="wppam-btn-secondary" style="font-size: 13px;">Export CSV</a>
             </div>
         </div>
 
@@ -52,7 +52,8 @@ function wppam_yearly_report()
                             <td><?php echo wc_price($data['revenue']); ?></td>
                             <td><?php echo wc_price($data['cogs']); ?></td>
                             <td><?php echo wc_price($data['expenses']); ?></td>
-                            <td style="font-weight:700; color: <?php echo $data['profit'] >= 0 ? 'var(--wppam-success)' : 'var(--wppam-danger)'; ?>">
+                            <td
+                                style="font-weight:700; color: <?php echo $data['profit'] >= 0 ? 'var(--wppam-success)' : 'var(--wppam-danger)'; ?>">
                                 <?php echo wc_price($data['profit']); ?>
                             </td>
                             <td>
@@ -156,38 +157,45 @@ function wppam_monthly_details_report()
                     </thead>
                     <tbody>
                         <?php if ($product_stats): ?>
-                            <?php foreach ($product_stats as $stat): 
+                            <?php foreach ($product_stats as $stat):
                                 $profit = $stat['revenue'] - $stat['total_cost'];
-                            ?>
+                                ?>
                                 <tr>
                                     <td><?php echo esc_html($stat['name']); ?></td>
                                     <td><?php echo wc_price($stat['cost']); ?></td>
                                     <td><?php echo $stat['qty']; ?> pcs</td>
                                     <td><?php echo wc_price($stat['revenue']); ?></td>
                                     <td class="wppam-text-danger"><?php echo wc_price($stat['total_cost']); ?></td>
-                                    <td class="wppam-text-bold<?php echo $profit >= 0 ? ' wppam-text-success' : ' wppam-text-danger'; ?>">
+                                    <td
+                                        class="wppam-text-bold<?php echo $profit >= 0 ? ' wppam-text-success' : ' wppam-text-danger'; ?>">
                                         <?php echo wc_price($profit); ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" style="text-align: right; font-weight: 700;">Monthly Totals:</td>
-                                    <td style="font-weight: 700; color: var(--wppam-success);"><?php echo wc_price($total_revenue); ?></td>
-                                    <td style="font-weight: 700; color: var(--wppam-danger);"><?php echo wc_price($total_cogs); ?></td>
-                                    <td style="font-weight: 700; color: var(--wppam-primary);"><?php echo wc_price($total_revenue - $total_cogs); ?></td>
-                                </tr>
-                            </tfoot>
-                        <?php else: ?>
-                            <tr><td colspan="6">No sales data found for this month.</td></tr>
-                        <?php endif; ?>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 700;">Monthly Totals:</td>
+                                <td style="font-weight: 700; color: var(--wppam-success);">
+                                    <?php echo wc_price($total_revenue); ?></td>
+                                <td style="font-weight: 700; color: var(--wppam-danger);"><?php echo wc_price($total_cogs); ?>
+                                </td>
+                                <td style="font-weight: 700; color: var(--wppam-primary);">
+                                    <?php echo wc_price($total_revenue - $total_cogs); ?></td>
+                            </tr>
+                        </tfoot>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6">No sales data found for this month.</td>
+                        </tr>
+                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
             <!-- Expenses Aggregation -->
             <div class="wppam-table-card">
-                <h3 style="padding: 20px 24px; margin: 0; border-bottom: 1px solid var(--wppam-border);">Expenses Summary</h3>
+                <h3 style="padding: 20px 24px; margin: 0; border-bottom: 1px solid var(--wppam-border);">Expenses Summary
+                </h3>
                 <table class="wppam-custom-table">
                     <thead>
                         <tr>
@@ -196,26 +204,29 @@ function wppam_monthly_details_report()
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($expenses): 
+                        <?php if ($expenses):
                             $total_exp = 0;
-                        ?>
-                            <?php foreach ($expenses as $exp): 
-                                $total_exp += $exp->total_amount;
                             ?>
+                            <?php foreach ($expenses as $exp):
+                                $total_exp += $exp->total_amount;
+                                ?>
                                 <tr>
                                     <td><?php echo esc_html($exp->category); ?></td>
-                                    <td style="font-weight:700; color: var(--wppam-danger);"><?php echo wc_price($exp->total_amount); ?></td>
+                                    <td style="font-weight:700; color: var(--wppam-danger);">
+                                        <?php echo wc_price($exp->total_amount); ?></td>
                                 </tr>
                             <?php endforeach; ?>
-                            <tfoot>
-                                <tr>
-                                    <td style="text-align: right; font-weight: 700;">Monthly Total:</td>
-                                    <td style="font-weight: 700;"><?php echo wc_price($total_exp); ?></td>
-                                </tr>
-                            </tfoot>
-                        <?php else: ?>
-                            <tr><td colspan="2">No expenses recorded.</td></tr>
-                        <?php endif; ?>
+                        <tfoot>
+                            <tr>
+                                <td style="text-align: right; font-weight: 700;">Monthly Total:</td>
+                                <td style="font-weight: 700;"><?php echo wc_price($total_exp); ?></td>
+                            </tr>
+                        </tfoot>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="2">No expenses recorded.</td>
+                        </tr>
+                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>

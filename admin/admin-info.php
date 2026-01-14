@@ -67,15 +67,17 @@ function wppam_info_page()
                             <span class="wppam-step-number">5</span>
                             <div class="wppam-step-text">
                                 <strong>Setup Ads Automation:</strong>
-                                <p>Go to <strong>Settings</strong> and connect your Facebook, Google, or TikTok Ads accounts. Enable <strong>Auto Sync</strong> to automatically track your daily ad spend.</p>
+                                <p>Go to <strong>Settings</strong> and connect your Facebook, Google, or TikTok Ads
+                                    accounts. Enable <strong>Auto Sync</strong> to automatically track your daily ad spend.
+                                </p>
                             </div>
                         </div>
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">6</span>
                             <div class="wppam-step-text">
                                 <strong>Check Inventory & Reports:</strong>
-                                <p>Review Inventory reports for stock value and visit Daily/Yearly summaries for deep
-                                    financial analysis.</p>
+                                <p>Review Inventory reports for stock value. Visit Daily summaries for monthly breakdowns
+                                    and **Yearly Report** for visual profit trends.</p>
                             </div>
                         </div>
                     </div>
@@ -99,8 +101,12 @@ function wppam_info_page()
                             powered by Chart.js.</li>
                         <li><strong>AJAX-Powered Filtering:</strong> Filter delivery status performance (Today, Last 7 Days,
                             etc.) instantly without page reloads.</li>
-                        <li><strong>Ads Automation:</strong> Seamlessly sync daily spend from Facebook, Google, and TikTok Ads.</li>
-                        <li><strong>WP-Cron Integration:</strong> Background synchronization ensures your ad expenses are updated every 24 hours.</li>
+                        <li><strong>Ads Automation:</strong> Seamlessly sync daily spend from Facebook, Google, and TikTok
+                            Ads.</li>
+                        <li><strong>Monthly Profit Trend:</strong> Visualize Revenue, Expenses, and Net Profit trends on the
+                            Yearly Report page.</li>
+                        <li><strong>WP-Cron Integration:</strong> Background synchronization ensures your ad expenses are
+                            updated every 24 hours.</li>
                         <li><strong>Data Export:</strong> Download your reports in CSV or PDF format for accounting.</li>
                     </ul>
                 </div>
@@ -110,20 +116,29 @@ function wppam_info_page()
                 <div class="wppam-table-card wppam-p-30">
                     <h3 class="wppam-mt-0 wppam-text-primary">Ads Automation Guide</h3>
                     <p>Connect your advertising platforms to automatically record ad spend as business expenses.</p>
-                    
+
                     <div style="margin-top: 25px;">
-                        <h4 style="color: var(--wppam-primary);"><span class="dashicons dashicons-facebook" style="vertical-align: middle; margin-right: 8px;"></span> Facebook Ads</h4>
-                        <p>Requires a <strong>Long-lived Access Token</strong> and your <strong>Ad Account ID</strong> (with act_ prefix). Syncs total spend for all campaigns daily.</p>
-                        
-                        <h4 style="color: var(--wppam-primary); margin-top: 20px;"><span class="dashicons dashicons-google" style="vertical-align: middle; margin-right: 8px;"></span> Google Ads</h4>
-                        <p>Requires <strong>Developer Token</strong>, <strong>OAuth2 Credentials</strong> (Client ID & Secret), and a <strong>Refresh Token</strong>. Ensure your Customer ID contains only digits.</p>
-                        
-                        <h4 style="color: var(--wppam-primary); margin-top: 20px;"><span class="dashicons dashicons-video-alt3" style="vertical-align: middle; margin-right: 8px;"></span> TikTok Ads</h4>
-                        <p>Requires an <strong>Access Token</strong> from the TikTok For Business Developers platform and your <strong>Advertiser ID</strong>.</p>
+                        <h4 style="color: var(--wppam-primary);"><span class="dashicons dashicons-facebook"
+                                style="vertical-align: middle; margin-right: 8px;"></span> Facebook Ads</h4>
+                        <p>Requires a <strong>Long-lived Access Token</strong> and your <strong>Ad Account ID</strong> (with
+                            act_ prefix). Syncs total spend for all campaigns daily.</p>
+
+                        <h4 style="color: var(--wppam-primary); margin-top: 20px;"><span class="dashicons dashicons-google"
+                                style="vertical-align: middle; margin-right: 8px;"></span> Google Ads</h4>
+                        <p>Requires <strong>Developer Token</strong>, <strong>OAuth2 Credentials</strong> (Client ID &
+                            Secret), and a <strong>Refresh Token</strong>. Ensure your Customer ID contains only digits.</p>
+
+                        <h4 style="color: var(--wppam-primary); margin-top: 20px;"><span
+                                class="dashicons dashicons-video-alt3"
+                                style="vertical-align: middle; margin-right: 8px;"></span> TikTok Ads</h4>
+                        <p>Requires an <strong>Access Token</strong> from the TikTok For Business Developers platform and
+                            your <strong>Advertiser ID</strong>.</p>
                     </div>
 
                     <div class="wppam-calc-box" style="margin-top: 30px;">
-                        <p style="color: #38bdf8; margin: 0;"><strong>Tip:</strong> Enable <strong>Auto Daily Sync</strong> in Settings to let the plugin fetch yesterday's spend automatically every midnight via WP-Cron.</p>
+                        <p style="color: #38bdf8; margin: 0;"><strong>Tip:</strong> Enable <strong>Auto Daily Sync</strong>
+                            in Settings to let the plugin fetch yesterday's spend automatically every midnight via WP-Cron.
+                        </p>
                     </div>
                 </div>
             </div>

@@ -31,6 +31,7 @@ A powerful, lightweight, and modern financial management tool for WooCommerce. T
 ### 📅 Comprehensive Reporting
 - **Daily Reports**: Itemized financial breakdown for any day of the month.
 - **Yearly Summaries**: Month-by-month financial health overview.
+- **Performance Trends**: Detailed bar & line charts overlaying **Revenue**, **Expenses**, and **Net Profit** for easy year-over-year comparison.
 - **Deep-Dive Details**: Drill down into any day or month to see exact products sold and specific costs.
 
 ### 📦 Inventory Intelligence

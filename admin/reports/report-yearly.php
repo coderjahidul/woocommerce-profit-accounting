@@ -28,6 +28,13 @@ function wppam_yearly_report()
             </div>
         </div>
 
+        <div class="wppam-table-card" style="padding: 24px; margin-bottom: 30px;">
+            <h3 style="margin-top:0;">Monthly Profit Trend</h3>
+            <div style="height: 300px;">
+                <canvas id="wppamYearlyTrendChart"></canvas>
+            </div>
+        </div>
+
         <div class="wppam-table-card">
             <table class="wppam-custom-table">
                 <thead>
@@ -176,11 +183,13 @@ function wppam_monthly_details_report()
                             <tr>
                                 <td colspan="3" style="text-align: right; font-weight: 700;">Monthly Totals:</td>
                                 <td style="font-weight: 700; color: var(--wppam-success);">
-                                    <?php echo wc_price($total_revenue); ?></td>
+                                    <?php echo wc_price($total_revenue); ?>
+                                </td>
                                 <td style="font-weight: 700; color: var(--wppam-danger);"><?php echo wc_price($total_cogs); ?>
                                 </td>
                                 <td style="font-weight: 700; color: var(--wppam-primary);">
-                                    <?php echo wc_price($total_revenue - $total_cogs); ?></td>
+                                    <?php echo wc_price($total_revenue - $total_cogs); ?>
+                                </td>
                             </tr>
                         </tfoot>
                     <?php else: ?>
@@ -213,7 +222,8 @@ function wppam_monthly_details_report()
                                 <tr>
                                     <td><?php echo esc_html($exp->category); ?></td>
                                     <td style="font-weight:700; color: var(--wppam-danger);">
-                                        <?php echo wc_price($exp->total_amount); ?></td>
+                                        <?php echo wc_price($exp->total_amount); ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <tfoot>

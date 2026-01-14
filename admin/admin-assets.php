@@ -85,31 +85,41 @@ function wppam_get_delivery_stats_ajax()
  * Add Chart.js initialization in the footer for the dashboard.
  */
 add_action('admin_footer', function () {
-    if (!isset($_GET['page']) || $_GET['page'] !== 'wppam')
+    if (!isset($_GET['page']) || !in_array($_GET['page'], ['wppam', 'wppam-yearly']))
         return;
+
+    $page = $_GET['page'];
+    $year = isset($_GET['year']) ? (int) $_GET['year'] : (int) date('Y');
+
     $profits = [];
     $revenues = [];
+    $expenses_list = []; // Renamed to avoid confusion with possible globals
     for ($m = 1; $m <= 12; $m++) {
-        $data = wppam_calculate_profit(date('Y'), $m);
+        $data = wppam_calculate_profit($year, $m);
         $profits[] = round($data['profit'], 2);
         $revenues[] = round($data['revenue'], 2);
+        $expenses_list[] = round($data['expenses'], 2);
     }
 
-    // Initial Data for Status Chart (This Month)
-    $start_m = date('Y-m-01');
-    $end_m = date('Y-m-t');
-    $statuses = ['completed', 'processing', 'on-hold', 'cancelled', 'refunded'];
+    // Initial Data for Status Chart (Only for Dashboard)
     $initial_counts = [];
     $initial_total = 0;
-    foreach ($statuses as $st) {
-        $c = count(wc_get_orders(['status' => $st, 'limit' => -1, 'return' => 'ids', 'date_created' => $start_m . '...' . $end_m]));
-        $initial_counts[] = $c;
-        $initial_total += $c;
+    if ($page === 'wppam') {
+        $start_m = date('Y-m-01');
+        $end_m = date('Y-m-t');
+        $statuses = ['completed', 'processing', 'on-hold', 'cancelled', 'refunded'];
+        foreach ($statuses as $st) {
+            $c = count(wc_get_orders(['status' => $st, 'limit' => -1, 'return' => 'ids', 'date_created' => $start_m . '...' . $end_m]));
+            $initial_counts[] = $c;
+            $initial_total += $c;
+        }
     }
     ?>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Main Line Chart
+            const fontStack = 'Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
+
+            // Dashboard Chart
             const lineCtx = document.getElementById('wppamChart');
             if (lineCtx) {
                 new Chart(lineCtx, {
@@ -145,7 +155,7 @@ add_action('admin_footer', function () {
                                 position: 'top',
                                 labels: {
                                     usePointStyle: true,
-                                    font: { family: 'Outfit', size: 13 }
+                                    font: { family: fontStack, size: 13 }
                                 }
                             }
                         },
@@ -153,11 +163,78 @@ add_action('admin_footer', function () {
                             y: {
                                 beginAtZero: true,
                                 grid: { borderDash: [2, 2] },
-                                ticks: { font: { family: 'Outfit' } }
+                                ticks: { font: { family: fontStack } }
                             },
                             x: {
                                 grid: { display: false },
-                                ticks: { font: { family: 'Outfit' } }
+                                ticks: { font: { family: fontStack } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Yearly Report Chart
+            const yearlyCtx = document.getElementById('wppamYearlyTrendChart');
+            if (yearlyCtx) {
+                new Chart(yearlyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Revenue',
+                            data: <?php echo json_encode($revenues); ?>,
+                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                            borderColor: '#22c55e',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }, {
+                            label: 'Expenses',
+                            data: <?php echo json_encode($expenses_list); ?>,
+                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                            borderColor: '#ef4444',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }, {
+                            label: 'Net Profit',
+                            data: <?php echo json_encode($profits); ?>,
+                            type: 'line',
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#6366f1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { family: fontStack, size: 13 }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                titleFont: { family: fontStack },
+                                bodyFont: { family: fontStack }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [2, 2] },
+                                ticks: { font: { family: fontStack } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: fontStack } }
                             }
                         }
                     }
@@ -174,7 +251,6 @@ add_action('admin_footer', function () {
                 if (statusChart) statusChart.destroy();
                 const legendTarget = document.getElementById('wppamStatusLegend');
                 const canvasContainer = document.querySelector('.wppam-status-canvas-container');
-                const originalCtx = document.getElementById('wppamStatusChart');
 
                 if (total > 0) {
                     canvasContainer.innerHTML = '<canvas id="wppamStatusChart"></canvas>';

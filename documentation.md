@@ -63,6 +63,7 @@ Automatically sync your daily ad spend from TikTok Ads:
 ### Daily & Yearly Reports
 - **Daily Report**: View a day-by-day breakdown of your finances for any selected month.
 - **Yearly Report**: View a month-by-month summary for the current year.
+    - **Monthly Profit Trend**: A comprehensive bar and line chart overlay showing **Revenue**, **Expenses**, and **Net Profit** trends for the selected year.
 - **Detailed View**: Click "View Details" on any report row to see a deep dive:
     - **Daily**: See orders received and specific expenses incurred.
     - **Monthly**: See product-level aggregation with **Qty Sold**, **Total Revenue**, **Total Cost**, and **Net Profit** per item.

@@ -13,8 +13,9 @@ add_action('admin_menu', function () {
     add_submenu_page('wppam', 'Yearly Report', 'Yearly Report', 'manage_options', 'wppam-yearly', 'wppam_yearly_report');
     add_submenu_page('wppam', 'Inventory Report', 'Inventory Report', 'manage_options', 'wppam-inventory', 'wppam_inventory_report');
     add_submenu_page('wppam', 'Add Expense', 'Add Expense', 'manage_options', 'wppam-add-expense', 'wppam_add_expense');
+    add_submenu_page('wppam', 'Settings', 'Settings', 'manage_options', 'wppam-settings', 'wppam_settings_page');
     add_submenu_page('wppam', 'Plugin Info', 'Plugin Info', 'manage_options', 'wppam-info', 'wppam_info_page');
-    
+
     // Hidden detailing pages
     add_submenu_page(null, 'Daily Details', 'Daily Details', 'manage_options', 'wppam-daily-details', 'wppam_daily_details_report');
     add_submenu_page(null, 'Monthly Details', 'Monthly Details', 'manage_options', 'wppam-monthly-details', 'wppam_monthly_details_report');

@@ -5,7 +5,7 @@
  * Description: Real-time net profit tracking, COGS management, and detailed financial reports for WooCommerce.
  * Version:     2.0.0
  * Author:      Jahidul Islam
- * Author URI:  https://wptest3.com
+ * Author URI:  https://github.com/coderjahidul
  * Text Domain: woocommerce-profit-accounting
  * Domain Path: /languages
  * License:     GPL-2.0+
@@ -33,6 +33,7 @@ register_activation_hook(__FILE__, ['WPPAM_Activator', 'activate']);
 require_once WPPAM_PATH . 'includes/functions-calculations.php';
 require_once WPPAM_PATH . 'includes/functions-expenses.php';
 require_once WPPAM_PATH . 'includes/functions-inventory.php';
+require_once WPPAM_PATH . 'includes/functions-facebook-ads.php';
 
 /**
  * Admin Interface
@@ -47,6 +48,7 @@ if (is_admin()) {
     require_once WPPAM_PATH . 'admin/admin-dashboard.php';
     require_once WPPAM_PATH . 'admin/admin-expenses.php';
     require_once WPPAM_PATH . 'admin/admin-info.php';
+    require_once WPPAM_PATH . 'admin/admin-settings.php';
 
     // Reports
     require_once WPPAM_PATH . 'admin/reports/report-daily.php';

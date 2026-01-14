@@ -36,6 +36,14 @@ Log and manage any business-related expenses (Rent, Salaries, Marketing, etc.):
 4. **Delete**: Click the "Delete" button to permanently remove an entry (requires confirmation).
 These costs are automatically deducted from your profit calculations.
 
+### Facebook Ads Integration (Auto-Expense)
+Automatically sync your daily ad spend from Facebook Ads Manager:
+1. Navigate to **Profit Manager > Settings**.
+2. Enter your **Facebook Access Token** and **Ad Account ID**.
+3. Select the **Expense Category** where ad spend should be recorded (default: Marketing).
+4. Enable **Auto Daily Sync** to have the plugin automatically fetch yesterday's spend every day via WP-Cron.
+5. Use the **Sync Now** button for immediate updates of today's current spend.
+
 ### Daily & Yearly Reports
 - **Daily Report**: View a day-by-day breakdown of your finances for any selected month.
 - **Yearly Report**: View a month-by-month summary for the current year.

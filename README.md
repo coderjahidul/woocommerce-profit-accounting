@@ -24,7 +24,8 @@ A powerful, lightweight, and modern financial management tool for WooCommerce. T
 ### 📱 Ads Automation
 - **Facebook Ads Sync**: Automatically fetch your daily Facebook Ad spend.
 - **Google Ads Sync**: Seamlessly integrate your Google Ads spend as business expenses.
-- **WP-Cron Integration**: Both integrations sync yesterday's spend every 24 hours.
+- **TikTok Ads Sync**: Automatically fetch and record your TikTok Ads daily spend.
+- **WP-Cron Integration**: All integrations sync yesterday's spend every 24 hours.
 - **Manual Sync**: Instant "Sync Now" buttons for real-time updates of today's spend.
 
 ### 📅 Comprehensive Reporting

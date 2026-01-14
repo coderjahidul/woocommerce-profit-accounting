@@ -24,6 +24,12 @@ function wppam_settings_page()
         update_option('wppam_google_expense_category', sanitize_text_field($_POST['google_expense_category']));
         update_option('wppam_google_auto_sync', isset($_POST['google_auto_sync']) ? 'yes' : 'no');
 
+        // TikTok Ads Settings
+        update_option('wppam_tiktok_access_token', sanitize_text_field($_POST['tiktok_access_token']));
+        update_option('wppam_tiktok_advertiser_id', sanitize_text_field($_POST['tiktok_advertiser_id']));
+        update_option('wppam_tiktok_expense_category', sanitize_text_field($_POST['tiktok_expense_category']));
+        update_option('wppam_tiktok_auto_sync', isset($_POST['tiktok_auto_sync']) ? 'yes' : 'no');
+
         echo '<div class="notice notice-success is-dismissible"><p>Settings saved successfully!</p></div>';
     }
 
@@ -39,6 +45,11 @@ function wppam_settings_page()
     $google_customer_id = get_option('wppam_google_customer_id', '');
     $google_expense_category = get_option('wppam_google_expense_category', 'Marketing');
     $google_auto_sync = get_option('wppam_google_auto_sync', 'no');
+
+    $tiktok_access_token = get_option('wppam_tiktok_access_token', '');
+    $tiktok_advertiser_id = get_option('wppam_tiktok_advertiser_id', '');
+    $tiktok_expense_category = get_option('wppam_tiktok_expense_category', 'Marketing');
+    $tiktok_auto_sync = get_option('wppam_tiktok_auto_sync', 'no');
 
     $categories = ['Rent', 'Salary', 'Godown', 'Marketing', 'Shipping', 'Utility', 'Other'];
 
@@ -206,6 +217,77 @@ function wppam_settings_page()
                     }
                 } else {
                     echo '<div class="notice notice-error is-dismissible" style="margin-top:20px;"><p>Sync function not found. Please ensure the implementation is complete.</p></div>';
+                }
+            }
+            ?>
+        </div>
+
+        <div class="wppam-table-card" style="max-width: 600px; padding: 30px; margin-top: 30px;">
+            <h2 style="margin-top:0;"><span class="dashicons dashicons-video-alt3"
+                    style="vertical-align: middle; margin-right: 10px;"></span>TikTok Ads Integration</h2>
+            <p style="color: var(--wppam-text-muted); margin-bottom: 25px;">Automatically fetch your daily TikTok Ads spend
+                and record it as a business expense.</p>
+
+            <form method="POST">
+                <?php wp_nonce_field('wppam_save_settings', 'wppam_save_settings_nonce'); ?>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Access Token</label>
+                    <input type="password" name="tiktok_access_token" value="<?php echo esc_attr($tiktok_access_token); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="act_...">
+                    <p class="description">Long-lived Access Token from TikTok For Business Developers platform.</p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Advertiser ID</label>
+                    <input type="text" name="tiktok_advertiser_id" value="<?php echo esc_attr($tiktok_advertiser_id); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="7000000000000000000">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Expense Category</label>
+                    <select name="tiktok_expense_category" style="width: 100%; border-radius: 6px; padding: 8px;">
+                        <?php
+                        foreach ($categories as $cat) {
+                            $selected = ($tiktok_expense_category == $cat) ? 'selected' : '';
+                            echo "<option value='$cat' $selected>$cat</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="display: flex; align-items: center; font-weight: 600;">
+                        <input type="checkbox" name="tiktok_auto_sync" value="yes" <?php checked($tiktok_auto_sync, 'yes'); ?>
+                        style="margin-right: 10px;">
+                        Enable Auto Daily Sync (WP-Cron)
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <button type="submit" class="wppam-btn-primary" style="padding: 10px 25px;">Save Settings</button>
+                    <?php if ($tiktok_access_token && $tiktok_advertiser_id): ?>
+                        <button type="submit" name="wppam_tiktok_sync_now" value="1" class="wppam-btn-secondary"
+                            style="padding: 10px 25px; border: 1px solid var(--wppam-primary); color: var(--wppam-primary);">
+                            <span class="dashicons dashicons-update" style="font-size: 18px; margin-top: 2px;"></span> Sync
+                            Spend for Today
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </form>
+
+            <?php
+            // Handle Manual Sync
+            if (isset($_POST['wppam_tiktok_sync_now']) && $_POST['wppam_tiktok_sync_now'] == '1') {
+                if (function_exists('wppam_sync_tiktok_ads_spend')) {
+                    $result = wppam_sync_tiktok_ads_spend(date('Y-m-d'));
+                    if (is_wp_error($result)) {
+                        echo '<div class="notice notice-error is-dismissible" style="margin-top:20px;"><p>Error: ' . $result->get_error_message() . '</p></div>';
+                    } else {
+                        echo '<div class="notice notice-success is-dismissible" style="margin-top:20px;"><p>Successfully synced ' . wc_price($result) . ' for today!</p></div>';
+                    }
+                } else {
+                    echo '<div class="notice notice-error is-dismissible" style="margin-top:20px;"><p>Sync function not found.</p></div>';
                 }
             }
             ?>

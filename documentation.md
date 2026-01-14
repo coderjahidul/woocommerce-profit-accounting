@@ -52,6 +52,14 @@ Automatically sync your daily ad spend from Google Ads:
 4. Enable **Auto Daily Sync** for automatic background updates.
 5. Use the **Sync Now** button for immediate updates.
 
+### TikTok Ads Integration (Auto-Expense)
+Automatically sync your daily ad spend from TikTok Ads:
+1. Navigate to **Profit Manager > Settings**.
+2. Enter your **Access Token** and **Advertiser ID**.
+3. Select the **Expense Category** where ad spend should be recorded.
+4. Enable **Auto Daily Sync** for automatic background updates.
+5. Use the **Sync Now** button for immediate updates.
+
 ### Daily & Yearly Reports
 - **Daily Report**: View a day-by-day breakdown of your finances for any selected month.
 - **Yearly Report**: View a month-by-month summary for the current year.

@@ -15,6 +15,15 @@ function wppam_settings_page()
         update_option('wppam_fb_expense_category', sanitize_text_field($_POST['fb_expense_category']));
         update_option('wppam_fb_auto_sync', isset($_POST['fb_auto_sync']) ? 'yes' : 'no');
 
+        // Google Ads Settings
+        update_option('wppam_google_developer_token', sanitize_text_field($_POST['google_developer_token']));
+        update_option('wppam_google_client_id', sanitize_text_field($_POST['google_client_id']));
+        update_option('wppam_google_client_secret', sanitize_text_field($_POST['google_client_secret']));
+        update_option('wppam_google_refresh_token', sanitize_text_field($_POST['google_refresh_token']));
+        update_option('wppam_google_customer_id', sanitize_text_field($_POST['google_customer_id']));
+        update_option('wppam_google_expense_category', sanitize_text_field($_POST['google_expense_category']));
+        update_option('wppam_google_auto_sync', isset($_POST['google_auto_sync']) ? 'yes' : 'no');
+
         echo '<div class="notice notice-success is-dismissible"><p>Settings saved successfully!</p></div>';
     }
 
@@ -22,6 +31,14 @@ function wppam_settings_page()
     $fb_ad_account_id = get_option('wppam_fb_ad_account_id', '');
     $fb_expense_category = get_option('wppam_fb_expense_category', 'Marketing');
     $fb_auto_sync = get_option('wppam_fb_auto_sync', 'no');
+
+    $google_developer_token = get_option('wppam_google_developer_token', '');
+    $google_client_id = get_option('wppam_google_client_id', '');
+    $google_client_secret = get_option('wppam_google_client_secret', '');
+    $google_refresh_token = get_option('wppam_google_refresh_token', '');
+    $google_customer_id = get_option('wppam_google_customer_id', '');
+    $google_expense_category = get_option('wppam_google_expense_category', 'Marketing');
+    $google_auto_sync = get_option('wppam_google_auto_sync', 'no');
 
     $categories = ['Rent', 'Salary', 'Godown', 'Marketing', 'Shipping', 'Utility', 'Other'];
 
@@ -93,6 +110,95 @@ function wppam_settings_page()
             if (isset($_POST['wppam_fb_sync_now']) && $_POST['wppam_fb_sync_now'] == '1') {
                 if (function_exists('wppam_sync_fb_ads_spend')) {
                     $result = wppam_sync_fb_ads_spend(date('Y-m-d'));
+                    if (is_wp_error($result)) {
+                        echo '<div class="notice notice-error is-dismissible" style="margin-top:20px;"><p>Error: ' . $result->get_error_message() . '</p></div>';
+                    } else {
+                        echo '<div class="notice notice-success is-dismissible" style="margin-top:20px;"><p>Successfully synced ' . wc_price($result) . ' for today!</p></div>';
+                    }
+                } else {
+                    echo '<div class="notice notice-error is-dismissible" style="margin-top:20px;"><p>Sync function not found. Please ensure the implementation is complete.</p></div>';
+                }
+            }
+            ?>
+        </div>
+
+        <div class="wppam-table-card" style="max-width: 600px; padding: 30px; margin-top: 30px;">
+            <h2 style="margin-top:0;"><span class="dashicons dashicons-google"
+                    style="vertical-align: middle; margin-right: 10px;"></span>Google Ads Integration</h2>
+            <p style="color: var(--wppam-text-muted); margin-bottom: 25px;">Automatically fetch your daily Google Ads spend
+                and record it as a business expense.</p>
+
+            <form method="POST">
+                <?php wp_nonce_field('wppam_save_settings', 'wppam_save_settings_nonce'); ?>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Developer Token</label>
+                    <input type="password" name="google_developer_token" value="<?php echo esc_attr($google_developer_token); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="Abc123Xyz...">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Client ID</label>
+                    <input type="text" name="google_client_id" value="<?php echo esc_attr($google_client_id); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="xxx.apps.googleusercontent.com">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Client Secret</label>
+                    <input type="password" name="google_client_secret" value="<?php echo esc_attr($google_client_secret); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="GOCSPX-...">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Refresh Token</label>
+                    <input type="password" name="google_refresh_token" value="<?php echo esc_attr($google_refresh_token); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="1//...">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Customer ID</label>
+                    <input type="text" name="google_customer_id" value="<?php echo esc_attr($google_customer_id); ?>"
+                        style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="1234567890">
+                    <p class="description">Digits only, no dashes.</p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Expense Category</label>
+                    <select name="google_expense_category" style="width: 100%; border-radius: 6px; padding: 8px;">
+                        <?php
+                        foreach ($categories as $cat) {
+                            $selected = ($google_expense_category == $cat) ? 'selected' : '';
+                            echo "<option value='$cat' $selected>$cat</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="display: flex; align-items: center; font-weight: 600;">
+                        <input type="checkbox" name="google_auto_sync" value="yes" <?php checked($google_auto_sync, 'yes'); ?>
+                        style="margin-right: 10px;">
+                        Enable Auto Daily Sync (WP-Cron)
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <button type="submit" class="wppam-btn-primary" style="padding: 10px 25px;">Save Settings</button>
+                    <?php if ($google_refresh_token && $google_customer_id): ?>
+                        <button type="submit" name="wppam_google_sync_now" value="1" class="wppam-btn-secondary"
+                            style="padding: 10px 25px; border: 1px solid var(--wppam-primary); color: var(--wppam-primary);">
+                            <span class="dashicons dashicons-update" style="font-size: 18px; margin-top: 2px;"></span> Sync
+                            Spend for Today
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </form>
+
+            <?php
+            // Handle Manual Sync
+            if (isset($_POST['wppam_google_sync_now']) && $_POST['wppam_google_sync_now'] == '1') {
+                if (function_exists('wppam_sync_google_ads_spend')) {
+                    $result = wppam_sync_google_ads_spend(date('Y-m-d'));
                     if (is_wp_error($result)) {
                         echo '<div class="notice notice-error is-dismissible" style="margin-top:20px;"><p>Error: ' . $result->get_error_message() . '</p></div>';
                     } else {

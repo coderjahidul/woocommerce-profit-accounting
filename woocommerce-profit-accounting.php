@@ -34,6 +34,7 @@ require_once WPPAM_PATH . 'includes/functions-calculations.php';
 require_once WPPAM_PATH . 'includes/functions-expenses.php';
 require_once WPPAM_PATH . 'includes/functions-inventory.php';
 require_once WPPAM_PATH . 'includes/functions-facebook-ads.php';
+require_once WPPAM_PATH . 'includes/functions-google-ads.php';
 
 /**
  * Admin Interface

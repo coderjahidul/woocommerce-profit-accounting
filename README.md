@@ -21,10 +21,11 @@ A powerful, lightweight, and modern financial management tool for WooCommerce. T
 - **Categorized Tracking**: Organize costs for better financial reporting.
 - **Automated Deductions**: Expenses are automatically subtracted from your net profit reports.
 
-### 📱 Facebook Ads Automation
-- **Auto-Expense Sync**: Automatically fetch your daily Facebook Ad spend.
-- **WP-Cron Integration**: Seamlessly syncs yesterday's spend every 24 hours.
-- **Manual Sync**: Instant "Sync Now" button for real-time spend updates.
+### 📱 Ads Automation
+- **Facebook Ads Sync**: Automatically fetch your daily Facebook Ad spend.
+- **Google Ads Sync**: Seamlessly integrate your Google Ads spend as business expenses.
+- **WP-Cron Integration**: Both integrations sync yesterday's spend every 24 hours.
+- **Manual Sync**: Instant "Sync Now" buttons for real-time updates of today's spend.
 
 ### 📅 Comprehensive Reporting
 - **Daily Reports**: Itemized financial breakdown for any day of the month.

@@ -84,6 +84,10 @@
     color: var(--wppam-primary);
 }
 
+.wppam-stat-value.stock {
+    color: #8b5cf6;
+}
+
 /* Chart Section */
 .wppam-chart-container {
     background: var(--wppam-bg-card);

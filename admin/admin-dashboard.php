@@ -51,15 +51,18 @@ function wppam_dashboard()
 
     // Main Stats always show CURRENT MONTH
     $data = wppam_calculate_profit(date('Y'), date('m'));
+    $inventory_data = wppam_get_inventory_data(); // Fetch inventory data
     ?>
     <div class="wrap wppam-dashboard-wrapper wppam-animate">
         <div class="wppam-header">
             <div>
                 <h1>Profit & Accounting Overview</h1>
-                <p style="margin: 5px 0 0 0; color: var(--wppam-text-muted);">Main metrics for <strong><?php echo date('F Y'); ?></strong></p>
+                <p style="margin: 5px 0 0 0; color: var(--wppam-text-muted);">Main metrics for
+                    <strong><?php echo date('F Y'); ?></strong></p>
             </div>
             <div class="wppam-actions">
-                <a href="<?php echo admin_url('admin.php?page=wppam-add-expense'); ?>" class="wppam-btn-primary">Add Expense</a>
+                <a href="<?php echo admin_url('admin.php?page=wppam-add-expense'); ?>" class="wppam-btn-primary">Add
+                    Expense</a>
             </div>
         </div>
 
@@ -80,6 +83,10 @@ function wppam_dashboard()
                 <div class="wppam-stat-label">Net Profit</div>
                 <div class="wppam-stat-value profit"><?php echo wc_price($data['profit']); ?></div>
             </div>
+            <div class="wppam-stat-card">
+                <div class="wppam-stat-label">Stock Value</div>
+                <div class="wppam-stat-value stock"><?php echo wc_price($inventory_data['total_value_cost']); ?></div>
+            </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 30px;">
@@ -93,7 +100,8 @@ function wppam_dashboard()
             <div class="wppam-table-card" style="padding: 24px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
                     <h3 style="margin:0;">Delivery Status</h3>
-                    <select id="wppam-delivery-filter" class="wppam-select" style="width: 140px; font-size: 11px; padding: 4px 8px; height: auto; cursor: pointer;">
+                    <select id="wppam-delivery-filter" class="wppam-select"
+                        style="width: 140px; font-size: 11px; padding: 4px 8px; height: auto; cursor: pointer;">
                         <option value="today">Today</option>
                         <option value="yesterday">Yesterday</option>
                         <option value="last-7-days">Last 7 Days</option>

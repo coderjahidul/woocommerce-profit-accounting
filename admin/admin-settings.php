@@ -20,6 +20,12 @@ function wppam_settings_page()
             update_option('wppam_fb_expense_category', sanitize_text_field($_POST['fb_expense_category']));
         update_option('wppam_fb_auto_sync', isset($_POST['fb_auto_sync']) ? 'yes' : 'no');
 
+        // Opening Balance Settings
+        if (isset($_POST['opening_balance_amount']))
+            update_option('wppam_opening_balance_amount', sanitize_text_field($_POST['opening_balance_amount']));
+        if (isset($_POST['opening_balance_date']))
+            update_option('wppam_opening_balance_date', sanitize_text_field($_POST['opening_balance_date']));
+
         // Google Ads Settings
         if (isset($_POST['google_developer_token']))
             update_option('wppam_google_developer_token', sanitize_text_field($_POST['google_developer_token']));
@@ -83,6 +89,9 @@ function wppam_settings_page()
     $fb_expense_category = get_option('wppam_fb_expense_category', 'Marketing');
     $fb_auto_sync = get_option('wppam_fb_auto_sync', 'no');
 
+    $opening_balance_amount = get_option('wppam_opening_balance_amount', '');
+    $opening_balance_date = get_option('wppam_opening_balance_date', '');
+
     $google_developer_token = get_option('wppam_google_developer_token', '');
     $google_client_id = get_option('wppam_google_client_id', '');
     $google_client_secret = get_option('wppam_google_client_secret', '');
@@ -97,7 +106,7 @@ function wppam_settings_page()
     $tiktok_auto_sync = get_option('wppam_tiktok_auto_sync', 'no');
 
     $categories = ['Rent', 'Salary', 'Godown', 'Marketing', 'Shipping', 'Utility', 'Other'];
-    $active_tab = isset($_POST['active_tab']) ? sanitize_text_field($_POST['active_tab']) : 'facebook';
+    $active_tab = isset($_POST['active_tab']) ? sanitize_text_field($_POST['active_tab']) : 'opening_balance';
 
     echo $sync_notice;
     ?>
@@ -112,6 +121,9 @@ function wppam_settings_page()
 
                 <!-- Navigation Tabs -->
                 <h2 class="nav-tab-wrapper wppam-tabs-nav" style="border-bottom: 2px solid var(--wppam-border); margin-bottom: 25px; padding-left: 0;">
+                    <a href="#opening_balance" class="nav-tab wppam-tab-btn <?php echo $active_tab == 'opening_balance' ? 'active' : ''; ?>" data-tab="opening_balance">
+                        <span class="dashicons dashicons-money-alt" style="font-size: 17px; margin-top: 3px; margin-right: 5px;"></span> Opening Balance
+                    </a>
                     <a href="#facebook" class="nav-tab wppam-tab-btn <?php echo $active_tab == 'facebook' ? 'active' : ''; ?>" data-tab="facebook">
                         <span class="dashicons dashicons-facebook" style="font-size: 17px; margin-top: 3px; margin-right: 5px;"></span> Facebook Ads
                     </a>
@@ -122,6 +134,30 @@ function wppam_settings_page()
                         <span class="dashicons dashicons-video-alt3" style="font-size: 17px; margin-top: 3px; margin-right: 5px;"></span> TikTok Ads
                     </a>
                 </h2>
+
+                <!-- Opening Balance Tab -->
+                <div id="opening_balance" class="wppam-tab-content <?php echo $active_tab == 'opening_balance' ? 'active' : ''; ?>">
+                    <div class="wppam-table-card" style="max-width: 650px; padding: 30px;">
+                        <h2 style="margin-top:0;">Opening Cash / Balance</h2>
+                        <p style="color: var(--wppam-text-muted); margin-bottom: 25px;">Set your initial cash balance and the date it applies from.</p>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Opening Balance Amount</label>
+                            <input type="number" step="0.01" name="opening_balance_amount" value="<?php echo esc_attr($opening_balance_amount); ?>"
+                                style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="0.00">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Opening Balance Date</label>
+                            <input type="date" name="opening_balance_date" value="<?php echo esc_attr($opening_balance_date); ?>"
+                                style="width: 100%; border-radius: 6px; padding: 10px;">
+                        </div>
+
+                        <div style="display: flex; gap: 15px;">
+                            <button type="submit" class="wppam-btn-primary" style="padding: 10px 25px;">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Facebook Tab -->
                 <div id="facebook" class="wppam-tab-content <?php echo $active_tab == 'facebook' ? 'active' : ''; ?>">

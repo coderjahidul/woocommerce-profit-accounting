@@ -52,6 +52,17 @@ function wppam_dashboard()
     // Main Stats always show CURRENT MONTH
     $data = wppam_calculate_profit(date('Y'), date('m'));
     $inventory_data = wppam_get_inventory_data(); // Fetch inventory data
+
+    // Fetch Cash Stats
+    $current_cash_balance = wppam_get_cash_balance();
+    $start_m = date('Y-m-01');
+    $end_m = date('Y-m-d');
+    $total_cash_in = wppam_get_total_cash_in($start_m, $end_m);
+    $total_cash_out = wppam_get_total_cash_out($start_m, $end_m);
+
+    // Fetch Today Stats
+    $today = date('Y-m-d');
+    $today_data = wppam_calculate_profit_for_range($today, $today);
     ?>
     <div class="wrap wppam-dashboard-wrapper wppam-animate">
         <div class="wppam-header">
@@ -67,25 +78,52 @@ function wppam_dashboard()
         </div>
 
         <div class="wppam-stats-grid">
-            <div class="wppam-stat-card">
-                <div class="wppam-stat-label">Total Revenue</div>
+            <!-- Monthly Overview -->
+            <div class="wppam-stat-card revenue">
+                <div class="wppam-stat-label">Monthly Sell</div>
                 <div class="wppam-stat-value revenue"><?php echo wc_price($data['revenue']); ?></div>
             </div>
-            <div class="wppam-stat-card">
+            <div class="wppam-stat-card expenses">
+                <div class="wppam-stat-label">Monthly Expenses</div>
+                <div class="wppam-stat-value expenses"><?php echo wc_price($data['expenses']); ?></div>
+            </div>
+            <div class="wppam-stat-card cogs">
                 <div class="wppam-stat-label">Product COGS</div>
                 <div class="wppam-stat-value cogs"><?php echo wc_price($data['cogs']); ?></div>
             </div>
-            <div class="wppam-stat-card">
-                <div class="wppam-stat-label">Operating Expenses</div>
-                <div class="wppam-stat-value expenses"><?php echo wc_price($data['expenses']); ?></div>
-            </div>
-            <div class="wppam-stat-card">
+            <div class="wppam-stat-card profit">
                 <div class="wppam-stat-label">Net Profit</div>
                 <div class="wppam-stat-value profit"><?php echo wc_price($data['profit']); ?></div>
             </div>
-            <div class="wppam-stat-card">
+
+            <!-- Today's Overview -->
+            <div class="wppam-stat-card revenue">
+                <div class="wppam-stat-label">Today Sell</div>
+                <div class="wppam-stat-value revenue"><?php echo wc_price($today_data['revenue']); ?></div>
+            </div>
+            <div class="wppam-stat-card expenses">
+                <div class="wppam-stat-label">Today Expense</div>
+                <div class="wppam-stat-value expenses"><?php echo wc_price($today_data['expenses']); ?></div>
+            </div>
+
+            <!-- Inventory & Cash -->
+            <div class="wppam-stat-card stock">
                 <div class="wppam-stat-label">Stock Value</div>
                 <div class="wppam-stat-value stock"><?php echo wc_price($inventory_data['total_value_cost']); ?></div>
+            </div>
+
+            <!-- Cash Management Cards -->
+            <div class="wppam-stat-card <?php echo $current_cash_balance >= 0 ? 'revenue' : 'expenses'; ?>">
+                <div class="wppam-stat-label">Available Cash</div>
+                <div class="wppam-stat-value <?php echo $current_cash_balance >= 0 ? 'revenue' : 'expenses'; ?>"><?php echo wc_price($current_cash_balance); ?></div>
+            </div>
+            <div class="wppam-stat-card revenue">
+                <div class="wppam-stat-label">Cash In (Month)</div>
+                <div class="wppam-stat-value revenue"><?php echo wc_price($total_cash_in); ?></div>
+            </div>
+            <div class="wppam-stat-card expenses">
+                <div class="wppam-stat-label">Cash Out (Month)</div>
+                <div class="wppam-stat-value expenses"><?php echo wc_price($total_cash_out); ?></div>
             </div>
         </div>
 

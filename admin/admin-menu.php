@@ -13,6 +13,7 @@ add_action('admin_menu', function () {
     add_submenu_page('wppam', 'Yearly Report', 'Yearly Report', 'manage_options', 'wppam-yearly', 'wppam_yearly_report');
     add_submenu_page('wppam', 'Inventory Report', 'Inventory Report', 'manage_options', 'wppam-inventory', 'wppam_inventory_report');
     add_submenu_page('wppam', 'Add Expense', 'Add Expense', 'manage_options', 'wppam-add-expense', 'wppam_add_expense');
+    add_submenu_page('wppam', 'Cash Ledger', 'Cash Management', 'manage_options', 'wppam-cash', 'wppam_cash_management_page');
     add_submenu_page('wppam', 'Settings', 'Settings', 'manage_options', 'wppam-settings', 'wppam_settings_page');
     add_submenu_page('wppam', 'Plugin Info', 'Plugin Info', 'manage_options', 'wppam-info', 'wppam_info_page');
 

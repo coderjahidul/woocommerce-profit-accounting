@@ -37,6 +37,18 @@ class WPPAM_Activator
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
+        $cash_table = $wpdb->prefix . 'wppam_cash_ledger';
+        $sql .= "CREATE TABLE $cash_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            amount decimal(10,2) NOT NULL,
+            type varchar(20) NOT NULL, -- 'in' or 'out'
+            category varchar(100) NOT NULL,
+            transaction_date date NOT NULL,
+            description text,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }

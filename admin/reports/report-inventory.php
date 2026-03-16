@@ -17,7 +17,7 @@ function wppam_inventory_report()
         </div>
 
         <div class="wppam-stats-grid">
-            <div class="wppam-stat-card">
+            <div class="wppam-stat-card profit">
                 <div class="wppam-stat-label">Total Inventory Value (at cost)</div>
                 <div class="wppam-stat-value profit"><?php echo wc_price($inventory['total_value_cost']); ?></div>
             </div>
@@ -25,7 +25,7 @@ function wppam_inventory_report()
                 <div class="wppam-stat-label">Total Units in Stock</div>
                 <div class="wppam-stat-value"><?php echo number_format($inventory['total_units']); ?></div>
             </div>
-            <div class="wppam-stat-card">
+            <div class="wppam-stat-card expenses">
                 <div class="wppam-stat-label">Out of Stock Items</div>
                 <div class="wppam-stat-value expenses"><?php echo number_format($inventory['out_of_stock_count']); ?></div>
             </div>

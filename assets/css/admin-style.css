@@ -45,8 +45,15 @@
     border-radius: var(--wppam-radius);
     box-shadow: var(--wppam-shadow);
     border: 1px solid var(--wppam-border);
+    border-left: 4px solid var(--wppam-border); /* Default neutral border */
     transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.wppam-stat-card.revenue { border-left-color: var(--wppam-success); }
+.wppam-stat-card.expenses { border-left-color: var(--wppam-danger); }
+.wppam-stat-card.cogs { border-left-color: var(--wppam-warning); }
+.wppam-stat-card.profit { border-left-color: var(--wppam-primary); }
+.wppam-stat-card.stock { border-left-color: #8b5cf6; }
 
 .wppam-stat-card:hover {
     transform: translateY(-4px);
@@ -393,4 +400,73 @@
 
 .wppam-text-bold {
     font-weight: 700 !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 960px) {
+    .wppam-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .wppam-stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    /* Handle Dashboard Layout Stacking */
+    div[style*="display: grid; grid-template-columns: 2fr 1fr"],
+    .wppam-grid-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .wppam-grid-1-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .wppam-footer-info {
+        grid-template-columns: 1fr;
+    }
+
+    .wppam-form-card {
+        padding: 24px;
+        margin: 20px auto;
+        width: 90%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .wppam-dashboard-wrapper {
+        margin-right: 15px;
+    }
+
+    .wppam-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wppam-stat-value {
+        font-size: 24px;
+    }
+
+    .wppam-tabs-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px;
+        scrollbar-width: none;
+    }
+    .wppam-tabs-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .wppam-custom-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .wppam-btn-primary, .wppam-btn-secondary {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
 }

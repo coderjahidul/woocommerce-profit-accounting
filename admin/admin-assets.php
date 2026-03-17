@@ -25,7 +25,17 @@ add_action('admin_enqueue_scripts', function ($hook) {
     wp_enqueue_style('wppam-google-fonts', 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap', [], null);
     wp_enqueue_style('wppam-admin-style', plugin_dir_url(dirname(__FILE__)) . 'assets/css/admin-style.css', [], '2.0.0');
     wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '4.4.0', true);
+
+    // Enqueue Select2 (WooCommerce usually has it)
+    if (class_exists('WooCommerce')) {
+        wp_enqueue_style('select2');
+        wp_enqueue_script('select2');
+    }
 });
+
+/**
+ * Select2 initialization is handled by individual pages to prevent duplication.
+ */
 
 // AJAX Handler for Delivery Stats
 add_action('wp_ajax_wppam_get_delivery_stats', 'wppam_get_delivery_stats_ajax');

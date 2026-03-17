@@ -37,6 +37,7 @@ require_once WPPAM_PATH . 'includes/functions-facebook-ads.php';
 require_once WPPAM_PATH . 'includes/functions-google-ads.php';
 require_once WPPAM_PATH . 'includes/functions-tiktok-ads.php';
 require_once WPPAM_PATH . 'includes/functions-cash.php';
+require_once WPPAM_PATH . 'includes/functions-purchases.php';
 
 /**
  * Admin Interface
@@ -50,6 +51,7 @@ if (is_admin()) {
     // UI Pages
     require_once WPPAM_PATH . 'admin/admin-dashboard.php';
     require_once WPPAM_PATH . 'admin/admin-expenses.php';
+    require_once WPPAM_PATH . 'admin/admin-purchases.php';
     require_once WPPAM_PATH . 'admin/admin-info.php';
     require_once WPPAM_PATH . 'admin/admin-settings.php';
     require_once WPPAM_PATH . 'admin/admin-cash.php';

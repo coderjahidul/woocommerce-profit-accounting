@@ -35,7 +35,7 @@ class WPPAM_Activator
             description text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
-        ) $charset_collate;";
+        ) $charset_collate;\n";
 
         $cash_table = $wpdb->prefix . 'wppam_cash_ledger';
         $sql .= "CREATE TABLE $cash_table (
@@ -45,6 +45,22 @@ class WPPAM_Activator
             category varchar(100) NOT NULL,
             transaction_date date NOT NULL,
             description text,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id)
+        ) $charset_collate;\n";
+
+        $purchase_table = $wpdb->prefix . 'wppam_purchases';
+        $sql .= "CREATE TABLE $purchase_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            invoice_no varchar(100) NOT NULL,
+            product_id bigint(20) NOT NULL,
+            variation_id bigint(20) NOT NULL DEFAULT 0,
+            quantity int(11) NOT NULL,
+            purchase_price decimal(10,2) NOT NULL,
+            total_amount decimal(10,2) NOT NULL,
+            purchase_date date NOT NULL,
+            supplier varchar(255),
+            notes text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
         ) $charset_collate;";

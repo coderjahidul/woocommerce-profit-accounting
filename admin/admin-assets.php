@@ -34,8 +34,19 @@ add_action('admin_enqueue_scripts', function ($hook) {
 });
 
 /**
- * Select2 initialization is handled by individual pages to prevent duplication.
+ * Add Select2 initialization.
  */
+add_action('admin_footer', function () {
+?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (jQuery.fn.select2) {
+                jQuery('.wppam-select2').select2();
+            }
+        });
+    </script>
+    <?php
+}, 20);
 
 // AJAX Handler for Delivery Stats
 add_action('wp_ajax_wppam_get_delivery_stats', 'wppam_get_delivery_stats_ajax');
@@ -99,7 +110,7 @@ add_action('admin_footer', function () {
         return;
 
     $page = $_GET['page'];
-    $year = isset($_GET['year']) ? (int) $_GET['year'] : (int) date('Y');
+    $year = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
 
     $profits = [];
     $revenues = [];
@@ -124,7 +135,7 @@ add_action('admin_footer', function () {
             $initial_total += $c;
         }
     }
-    ?>
+?>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const fontStack = 'Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';

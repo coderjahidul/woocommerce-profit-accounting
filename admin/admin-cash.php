@@ -14,6 +14,7 @@ function wppam_cash_management_page()
         $result = wppam_add_cash_transaction([
             'amount'           => $_POST['amount'],
             'type'             => $_POST['type'],
+            'account'          => $_POST['account'],
             'category'         => $_POST['category'],
             'transaction_date' => $_POST['transaction_date'],
             'description'      => $_POST['description'],
@@ -33,9 +34,14 @@ function wppam_cash_management_page()
         echo '<div class="notice notice-success is-dismissible"><p>Transaction deleted.</p></div>';
     }
 
-    $current_balance = wppam_get_cash_balance();
+    $cash_balance = wppam_get_cash_balance('cash');
+    $bank_balance = wppam_get_cash_balance('bank');
+    $mfs_balance  = wppam_get_cash_balance('mfs');
     
-    // Summary for current month
+    $cash_expenses = wppam_get_account_expenses('cash');
+    $bank_expenses = wppam_get_account_expenses('bank');
+    $mfs_expenses  = wppam_get_account_expenses('mfs');
+    // Summary for current month (All accounts)
     $start_m = date('Y-m-01');
     $end_m = date('Y-m-t');
     $total_in = wppam_get_total_cash_in($start_m, $end_m);
@@ -51,18 +57,31 @@ function wppam_cash_management_page()
         </div>
 
         <div class="wppam-stats-grid">
-            <div class="wppam-stat-card <?php echo $current_balance >= 0 ? 'revenue' : 'expenses'; ?>">
-                <div class="wppam-stat-label">Available Cash Balance</div>
-                <div class="wppam-stat-value <?php echo $current_balance >= 0 ? 'revenue' : 'expenses'; ?>">
-                    <?php echo wc_price($current_balance); ?>
+            <div class="wppam-stat-card <?php echo $cash_balance >= 0 ? 'revenue' : 'expenses'; ?>">
+                <div class="wppam-stat-label">Cash Balance</div>
+                <div class="wppam-stat-value <?php echo $cash_balance >= 0 ? 'revenue' : 'expenses'; ?>">
+                    <?php echo wc_price($cash_balance); ?>
+                </div>
+                <div style="font-size: 12px; margin-top: 5px; opacity: 0.8;">
+                    Total Expenses: <?php echo wc_price($cash_expenses); ?>
                 </div>
             </div>
             <div class="wppam-stat-card revenue">
-                <div class="wppam-stat-label">Cash In (This Month)</div>
-                <div class="wppam-stat-value revenue"><?php echo wc_price($total_in); ?></div>
+                <div class="wppam-stat-label">Bank Balance</div>
+                <div class="wppam-stat-value revenue"><?php echo wc_price($bank_balance); ?></div>
+                <div style="font-size: 12px; margin-top: 5px; opacity: 0.8; color: var(--wppam-danger);">
+                    Total Expenses: <?php echo wc_price($bank_expenses); ?>
+                </div>
+            </div>
+            <div class="wppam-stat-card profit">
+                <div class="wppam-stat-label">MFS Balance</div>
+                <div class="wppam-stat-value profit"><?php echo wc_price($mfs_balance); ?></div>
+                <div style="font-size: 12px; margin-top: 5px; opacity: 0.8; color: var(--wppam-danger);">
+                    Total Expenses: <?php echo wc_price($mfs_expenses); ?>
+                </div>
             </div>
             <div class="wppam-stat-card expenses">
-                <div class="wppam-stat-label">Cash Out (This Month)</div>
+                <div class="wppam-stat-label">Monthly Cash Out</div>
                 <div class="wppam-stat-value expenses"><?php echo wc_price($total_out); ?></div>
             </div>
         </div>
@@ -73,6 +92,7 @@ function wppam_cash_management_page()
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Account</th>
                         <th>Type</th>
                         <th>Category</th>
                         <th>Amount</th>
@@ -87,6 +107,7 @@ function wppam_cash_management_page()
                         <?php foreach ($transactions as $tx): ?>
                             <tr>
                                 <td><?php echo date('Y-m-d', strtotime($tx->transaction_date)); ?></td>
+                                <td><span style="text-transform: capitalize; font-weight: 600;"><?php echo esc_html($tx->account); ?></span></td>
                                 <td>
                                     <span class="wppam-badge <?php echo $tx->type == 'in' ? 'wppam-badge-success' : 'wppam-badge-danger'; ?>">
                                         <?php echo strtoupper($tx->type); ?>
@@ -122,10 +143,19 @@ function wppam_cash_management_page()
                 <?php wp_nonce_field('wppam_add_cash', 'wppam_add_cash_nonce'); ?>
                 
                 <div class="wppam-form-group">
+                    <label>Account</label>
+                    <select name="account" class="wppam-select" required>
+                        <option value="cash">Cash</option>
+                        <option value="bank">Bank</option>
+                        <option value="mfs">MFS (Bkash, Nagad, etc)</option>
+                    </select>
+                </div>
+
+                <div class="wppam-form-group">
                     <label>Transaction Type</label>
                     <select name="type" class="wppam-select" required>
-                        <option value="in">Cash In (+)</option>
-                        <option value="out">Cash Out (-)</option>
+                        <option value="in">In (+)</option>
+                        <option value="out">Out (-)</option>
                     </select>
                 </div>
 

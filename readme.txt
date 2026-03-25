@@ -3,7 +3,7 @@ Contributors: jahidulsabuz
 Tags: woocommerce, profit, accounting, cogs, expense, reports
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 2.0.0
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -18,6 +18,7 @@ Key Features:
 * **Expense Management**: Log and categorize business expenses.
 * **Daily & Monthly Reports**: Detailed breakdown of profit and loss.
 * **Interactive Charts**: Visualize your annual performance.
+* **Purchase Invoice Management**: Record and track product purchases from suppliers with full invoice support.
 * **Export Options**: Download reports in CSV and PDF formats (Basic).
 * **Modern UI**: Clean, responsive, and easy-to-use admin dashboard.
 
@@ -42,6 +43,15 @@ Go to any product edit page -> General tab -> Pricing section. You will see a "P
 3. Adding a new expense.
 
 == Changelog ==
+ 
+= 2.2.0 =
+* Enhanced Purchase Invoice Management with an interactive modal view.
+* Added automatic Grand Total calculation for purchase invoices.
+* Updated documentation and plugin metadata.
+
+= 2.1.0 =
+* Added Purchase Invoice Management to record and track stock purchases.
+* Initial implementation of the history table.
 
 = 2.0.0 =
 * Major internal refactoring for scalability.

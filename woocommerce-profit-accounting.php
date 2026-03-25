@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Profit & Accounting Manager
  * Plugin URI:  https://github.com/coderjahidul/woocommerce-profit-accounting
  * Description: Real-time net profit tracking, COGS management, and detailed financial reports for WooCommerce.
- * Version:     2.0.0
+ * Version:     2.2.0
  * Author:      Jahidul Islam
  * Author URI:  https://github.com/coderjahidul
  * Text Domain: woocommerce-profit-accounting
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define Constants
-define('WPPAM_VERSION', '2.0.0');
+define('WPPAM_VERSION', '2.2.0');
 define('WPPAM_PATH', plugin_dir_path(__FILE__));
 define('WPPAM_URL', plugin_dir_url(__FILE__));
 

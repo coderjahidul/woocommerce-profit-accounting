@@ -21,6 +21,13 @@ A powerful, lightweight, and modern financial management tool for WooCommerce. T
 - **Categorized Tracking**: Organize costs for better financial reporting.
 - **Automated Deductions**: Expenses are automatically subtracted from your net profit reports.
 
+### 🛒 Purchase Invoice Management
+- **Stock Invoices**: Record and track bulk product purchases from suppliers.
+- **Multi-item Entry**: Add multiple products and variations to a single invoice.
+- **Account Mapping**: Link purchases to specific payment accounts (Cash, Bank, MFS).
+- **Interactive UI**: Modal-based invoice viewing for quick item breakdown and **Grand Total** verification.
+- **History Tracking**: Maintain a full history of invoices for better audit trails.
+
 ### 📱 Ads Automation
 - **Facebook Ads Sync**: Automatically fetch your daily Facebook Ad spend.
 - **Google Ads Sync**: Seamlessly integrate your Google Ads spend as business expenses.

@@ -75,6 +75,14 @@ function wppam_info_page()
                         <div class="wppam-step-item">
                             <span class="wppam-step-number">6</span>
                             <div class="wppam-step-text">
+                                <strong>Record Purchase Invoices:</strong>
+                                <p>Manage bulk stock purchases in the **Purchases** menu. Track suppliers, invoice numbers,
+                                    and view detailed item breakdowns via interactive modals.</p>
+                            </div>
+                        </div>
+                        <div class="wppam-step-item">
+                            <span class="wppam-step-number">7</span>
+                            <div class="wppam-step-text">
                                 <strong>Check Inventory & Reports:</strong>
                                 <p>Review Inventory reports for stock value. Visit Daily summaries for monthly breakdowns
                                     and **Yearly Report** for visual profit trends.</p>
@@ -107,6 +115,7 @@ function wppam_info_page()
                             Yearly Report page.</li>
                         <li><strong>WP-Cron Integration:</strong> Background synchronization ensures your ad expenses are
                             updated every 24 hours.</li>
+                        <li><strong>Purchase Invoice Management:</strong> Record and track bulk stock purchases with full invoice history and interactive item views.</li>
                         <li><strong>Data Export:</strong> Download your reports in CSV or PDF format for accounting.</li>
                     </ul>
                 </div>
@@ -200,7 +209,7 @@ function wppam_info_page()
         <div class="wppam-footer-info wppam-mt-30">
             <div class="wppam-table-card wppam-p-24">
                 <h4 class="wppam-mt-0">Technical Info</h4>
-                <small>Version: 2.0.0 | Text Domain: woocommerce-profit-accounting</small>
+                <small>Version: 2.2.0 | Text Domain: woocommerce-profit-accounting</small>
             </div>
             <div class="wppam-table-card wppam-p-24">
                 <h4 class="wppam-mt-0">Need Help?</h4>

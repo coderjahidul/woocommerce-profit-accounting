@@ -31,6 +31,7 @@ class WPPAM_Activator
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             amount decimal(10,2) NOT NULL,
             category varchar(100) NOT NULL,
+            account varchar(50) NOT NULL DEFAULT 'cash', -- 'cash', 'bank', 'mfs'
             expense_date date NOT NULL,
             description text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
@@ -42,6 +43,7 @@ class WPPAM_Activator
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             amount decimal(10,2) NOT NULL,
             type varchar(20) NOT NULL, -- 'in' or 'out'
+            account varchar(50) NOT NULL DEFAULT 'cash', -- 'cash', 'bank', 'mfs'
             category varchar(100) NOT NULL,
             transaction_date date NOT NULL,
             description text,
@@ -60,6 +62,7 @@ class WPPAM_Activator
             total_amount decimal(10,2) NOT NULL,
             purchase_date date NOT NULL,
             supplier varchar(255),
+            payment_account varchar(50) NOT NULL DEFAULT 'cash', -- 'cash', 'bank', 'mfs'
             notes text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)

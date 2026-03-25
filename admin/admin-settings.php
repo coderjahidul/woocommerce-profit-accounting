@@ -23,8 +23,18 @@ function wppam_settings_page()
         // Opening Balance Settings
         if (isset($_POST['opening_balance_amount']))
             update_option('wppam_opening_balance_amount', sanitize_text_field($_POST['opening_balance_amount']));
+        if (isset($_POST['bank_balance']))
+            update_option('wppam_bank_balance', sanitize_text_field($_POST['bank_balance']));
+        if (isset($_POST['mfs_balance']))
+            update_option('wppam_mfs_balance', sanitize_text_field($_POST['mfs_balance']));
         if (isset($_POST['opening_balance_date']))
             update_option('wppam_opening_balance_date', sanitize_text_field($_POST['opening_balance_date']));
+
+        // Payment Mapping Settings
+        if (isset($_POST['payment_mapping']) && is_array($_POST['payment_mapping'])) {
+            $mapping = array_map('sanitize_text_field', $_POST['payment_mapping']);
+            update_option('wppam_payment_mapping', $mapping);
+        }
 
         // Google Ads Settings
         if (isset($_POST['google_developer_token']))
@@ -90,6 +100,8 @@ function wppam_settings_page()
     $fb_auto_sync = get_option('wppam_fb_auto_sync', 'no');
 
     $opening_balance_amount = get_option('wppam_opening_balance_amount', '');
+    $bank_balance = get_option('wppam_bank_balance', '');
+    $mfs_balance = get_option('wppam_mfs_balance', '');
     $opening_balance_date = get_option('wppam_opening_balance_date', '');
 
     $google_developer_token = get_option('wppam_google_developer_token', '');
@@ -104,6 +116,9 @@ function wppam_settings_page()
     $tiktok_advertiser_id = get_option('wppam_tiktok_advertiser_id', '');
     $tiktok_expense_category = get_option('wppam_tiktok_expense_category', 'Marketing');
     $tiktok_auto_sync = get_option('wppam_tiktok_auto_sync', 'no');
+
+    $payment_mapping = get_option('wppam_payment_mapping', []);
+    $gateways = WC()->payment_gateways->get_available_payment_gateways();
 
     $categories = ['Rent', 'Salary', 'Godown', 'Marketing', 'Shipping', 'Utility', 'Other'];
     $active_tab = isset($_POST['active_tab']) ? sanitize_text_field($_POST['active_tab']) : 'opening_balance';
@@ -133,6 +148,9 @@ function wppam_settings_page()
                     <a href="#tiktok" class="nav-tab wppam-tab-btn <?php echo $active_tab == 'tiktok' ? 'active' : ''; ?>" data-tab="tiktok">
                         <span class="dashicons dashicons-video-alt3" style="font-size: 17px; margin-top: 3px; margin-right: 5px;"></span> TikTok Ads
                     </a>
+                    <a href="#payment_mapping" class="nav-tab wppam-tab-btn <?php echo $active_tab == 'payment_mapping' ? 'active' : ''; ?>" data-tab="payment_mapping">
+                        <span class="dashicons dashicons-admin-settings" style="font-size: 17px; margin-top: 3px; margin-right: 5px;"></span> Payment Mapping
+                    </a>
                 </h2>
 
                 <!-- Opening Balance Tab -->
@@ -142,8 +160,20 @@ function wppam_settings_page()
                         <p style="color: var(--wppam-text-muted); margin-bottom: 25px;">Set your initial cash balance and the date it applies from.</p>
 
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Opening Balance Amount</label>
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Opening Cash Balance Amount</label>
                             <input type="number" step="0.01" name="opening_balance_amount" value="<?php echo esc_attr($opening_balance_amount); ?>"
+                                style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="0.00">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">Bank Balance</label>
+                            <input type="number" step="0.01" name="bank_balance" value="<?php echo esc_attr($bank_balance); ?>"
+                                style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="0.00">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px;">MFS Balance (Bkash, Nagad, etc)</label>
+                            <input type="number" step="0.01" name="mfs_balance" value="<?php echo esc_attr($mfs_balance); ?>"
                                 style="width: 100%; border-radius: 6px; padding: 10px;" placeholder="0.00">
                         </div>
 
@@ -327,6 +357,49 @@ function wppam_settings_page()
                                         <span class="dashicons dashicons-update" style="font-size: 18px; margin-top: 2px;"></span> Sync Spend for Today
                                     </button>
                             <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Mapping Tab -->
+                <div id="payment_mapping" class="wppam-tab-content <?php echo $active_tab == 'payment_mapping' ? 'active' : ''; ?>">
+                    <div class="wppam-table-card" style="max-width: 800px; padding: 30px;">
+                        <h2 style="margin-top:0;">Payment Method to Account Mapping</h2>
+                        <p style="color: var(--wppam-text-muted); margin-bottom: 25px;">Map your WooCommerce payment methods to specific internal accounts for revenue tracking.</p>
+
+                        <table class="wppam-custom-table" style="width: 100%; border: 1px solid var(--wppam-border);">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; padding: 12px;">Payment Method</th>
+                                    <th style="text-align: left; padding: 12px;">Map to Account</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($gateways as $id => $gateway): ?>
+                                    <tr>
+                                        <td style="padding: 12px;">
+                                            <strong><?php echo esc_html($gateway->get_title()); ?></strong>
+                                            <div style="font-size: 11px; color: #888;"><?php echo esc_html($id); ?></div>
+                                        </td>
+                                        <td style="padding: 12px;">
+                                            <select name="payment_mapping[<?php echo esc_attr($id); ?>]" style="width: 100%; border-radius: 6px; padding: 8px;">
+                                                <?php 
+                                                $accounts = ['cash' => 'Cash', 'bank' => 'Bank', 'mfs' => 'MFS'];
+                                                $current_mapped = isset($payment_mapping[$id]) ? $payment_mapping[$id] : 'cash';
+                                                foreach ($accounts as $val => $label) {
+                                                    $selected = ($current_mapped == $val) ? 'selected' : '';
+                                                    echo "<option value='$val' $selected>$label</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+
+                        <div style="margin-top: 25px;">
+                            <button type="submit" class="wppam-btn-primary" style="padding: 10px 25px;">Save Mapping</button>
                         </div>
                     </div>
                 </div>

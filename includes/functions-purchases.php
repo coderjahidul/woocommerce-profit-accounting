@@ -101,15 +101,16 @@ function wppam_add_bulk_purchase($items, $common_data)
 
         // 1. Insert into purchases table
         $wpdb->insert($wpdb->prefix . 'wppam_purchases', [
-            'invoice_no'     => $common_data['invoice_no'],
-            'product_id'     => $product_id,
-            'variation_id'   => $variation_id,
-            'quantity'       => $quantity,
-            'purchase_price' => $purchase_price,
-            'total_amount'   => $total_amount,
-            'purchase_date'  => $common_data['purchase_date'],
-            'supplier'       => $common_data['supplier'],
-            'notes'          => $common_data['notes'],
+            'invoice_no'      => $common_data['invoice_no'],
+            'product_id'      => $product_id,
+            'variation_id'    => $variation_id,
+            'quantity'        => $quantity,
+            'purchase_price'  => $purchase_price,
+            'total_amount'    => $total_amount,
+            'purchase_date'   => $common_data['purchase_date'],
+            'supplier'        => $common_data['supplier'],
+            'payment_account' => isset($common_data['payment_account']) ? $common_data['payment_account'] : 'cash',
+            'notes'           => $common_data['notes'],
         ]);
 
         $target_id = $variation_id ?: $product_id;
@@ -137,6 +138,7 @@ function wppam_add_bulk_purchase($items, $common_data)
         wppam_add_cash_transaction([
             'amount'           => $total_transaction_amount,
             'type'             => 'out',
+            'account'          => isset($common_data['payment_account']) ? $common_data['payment_account'] : 'cash',
             'category'         => 'Product Purchase',
             'transaction_date' => $common_data['purchase_date'],
             'description'      => sprintf(__('Purchase Invoice %s: %s', 'woocommerce-profit-accounting'), $common_data['invoice_no'], implode(', ', $purchased_items_desc)),
@@ -153,7 +155,7 @@ function wppam_get_invoices($limit = 20)
 {
     global $wpdb;
     $table = $wpdb->prefix . 'wppam_purchases';
-    return $wpdb->get_results("SELECT invoice_no, purchase_date, supplier, SUM(total_amount) as total_amount, COUNT(id) as items_count 
+    return $wpdb->get_results("SELECT invoice_no, purchase_date, supplier, payment_account, SUM(total_amount) as total_amount, COUNT(id) as items_count 
                                FROM $table 
                                GROUP BY invoice_no 
                                ORDER BY id DESC 

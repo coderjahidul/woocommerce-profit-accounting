@@ -36,6 +36,20 @@ Log and manage any business-related expenses (Rent, Salaries, Marketing, etc.):
 4. **Delete**: Click the "Delete" button to permanently remove an entry (requires confirmation).
 These costs are automatically deducted from your profit calculations.
 
+### Purchase Invoice Management
+Record and track bulk product purchases from your suppliers:
+1. Navigate to **Profit Manager > Purchases**.
+2. **Add Invoice**:
+    - Enter a unique **Invoice Number**, **Date**, and **Supplier**.
+    - Select a **Payment Account** (Cash, Bank, or MFS) to track funds correctly.
+    - Click **+ Add Product** to add items to the invoice.
+    - For each item, select the product (or specific variation), enter the **Quantity**, and the **Unit Purchase Price**.
+    - The Grand Total will be calculated automatically.
+3. **Save**: Click "Save Purchase Invoice" to record the entry.
+4. **View History**: All recorded invoices are listed in the history table.
+5. **Detailed View & Total**: Click the **View Invoice** button to see a full breakdown of products and the **Grand Total** within a specific invoice via an interactive modal.
+6. **Deletion**: You can delete an entire invoice if needed (requires confirmation).
+
 ### Facebook Ads Integration (Auto-Expense)
 Automatically sync your daily ad spend from Facebook Ads Manager:
 1. Navigate to **Profit Manager > Settings**.

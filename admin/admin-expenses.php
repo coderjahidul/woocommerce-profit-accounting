@@ -39,6 +39,7 @@ function wppam_add_expense()
             $result = $wpdb->update($table, [
                 'amount' => $amount,
                 'category' => $category,
+                'account' => sanitize_text_field($_POST['account']),
                 'expense_date' => $date,
                 'description' => $description
             ], ['id' => $id]);
@@ -51,6 +52,7 @@ function wppam_add_expense()
             $result = $wpdb->insert($table, [
                 'amount' => $amount,
                 'category' => $category,
+                'account' => sanitize_text_field($_POST['account']),
                 'expense_date' => $date,
                 'description' => $description
             ]);
@@ -94,6 +96,18 @@ function wppam_add_expense()
                         </select>
                     </div>
                     <div style="margin-bottom: 15px;">
+                        <label>Paid From (Account)</label>
+                        <select name="account" style="width: 100%; border-radius: 6px; padding: 8px;">
+                            <?php 
+                            $accounts = ['cash' => 'Cash', 'bank' => 'Bank', 'mfs' => 'MFS'];
+                            foreach ($accounts as $val => $label) {
+                                $selected = ($edit_expense && $edit_expense->account == $val) ? 'selected' : '';
+                                echo "<option value='$val' $selected>$label</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
                         <label>Date</label>
                         <input type="date" name="expense_date" required 
                             value="<?php echo $edit_expense ? esc_attr($edit_expense->expense_date) : date('Y-m-d'); ?>"
@@ -119,6 +133,7 @@ function wppam_add_expense()
                         <tr>
                             <th>Date</th>
                             <th>Category</th>
+                            <th>Account</th>
                             <th>Note</th>
                             <th>Amount</th>
                             <th>Action</th>
@@ -129,6 +144,7 @@ function wppam_add_expense()
                             <tr>
                                 <td><?php echo date('M d, Y', strtotime($exp->expense_date)); ?></td>
                                 <td><span style="font-weight:600;"><?php echo esc_html($exp->category); ?></span></td>
+                                <td><span style="text-transform: capitalize; font-weight:600;"><?php echo esc_html($exp->account); ?></span></td>
                                 <td style="color: var(--wppam-text-muted);"><?php echo esc_html($exp->description); ?></td>
                                 <td style="font-weight:700; color: var(--wppam-danger);">-
                                     <?php echo wc_price($exp->amount); ?></td>

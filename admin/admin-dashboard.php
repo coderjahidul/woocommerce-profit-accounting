@@ -54,7 +54,10 @@ function wppam_dashboard()
     $inventory_data = wppam_get_inventory_data(); // Fetch inventory data
 
     // Fetch Cash Stats
-    $current_cash_balance = wppam_get_cash_balance();
+    $current_cash_balance = wppam_get_cash_balance('cash');
+    $current_bank_balance = wppam_get_cash_balance('bank');
+    $current_mfs_balance  = wppam_get_cash_balance('mfs');
+
     $start_m = date('Y-m-01');
     $end_m = date('Y-m-d');
     $total_cash_in = wppam_get_total_cash_in($start_m, $end_m);
@@ -118,12 +121,12 @@ function wppam_dashboard()
                 <div class="wppam-stat-value <?php echo $current_cash_balance >= 0 ? 'revenue' : 'expenses'; ?>"><?php echo wc_price($current_cash_balance); ?></div>
             </div>
             <div class="wppam-stat-card revenue">
-                <div class="wppam-stat-label">Cash In (Month)</div>
-                <div class="wppam-stat-value revenue"><?php echo wc_price($total_cash_in); ?></div>
+                <div class="wppam-stat-label">Bank Balance</div>
+                <div class="wppam-stat-value revenue"><?php echo wc_price($current_bank_balance); ?></div>
             </div>
-            <div class="wppam-stat-card expenses">
-                <div class="wppam-stat-label">Cash Out (Month)</div>
-                <div class="wppam-stat-value expenses"><?php echo wc_price($total_cash_out); ?></div>
+            <div class="wppam-stat-card profit">
+                <div class="wppam-stat-label">MFS Balance</div>
+                <div class="wppam-stat-value profit"><?php echo wc_price($current_mfs_balance); ?></div>
             </div>
         </div>
 

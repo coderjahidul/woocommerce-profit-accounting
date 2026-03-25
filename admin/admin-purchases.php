@@ -55,6 +55,7 @@ function wppam_purchases_page()
             'invoice_no' => $invoice_no,
             'purchase_date' => sanitize_text_field($_POST['purchase_date']),
             'supplier' => sanitize_text_field($_POST['supplier']),
+            'payment_account' => sanitize_text_field($_POST['payment_account']),
             'notes' => sanitize_textarea_field($_POST['notes']),
         ];
 
@@ -155,6 +156,14 @@ function wppam_purchases_page()
                         <input type="text" name="supplier" style="width: 100%; border-radius: 6px; padding: 8px;">
                     </div>
                     <div style="margin-bottom: 15px;">
+                        <label><?php _e('Payment Account', 'woocommerce-profit-accounting'); ?> <span style="color:red;">*</span></label>
+                        <select name="payment_account" required style="width: 100%; border-radius: 6px; padding: 8px;">
+                            <option value="cash">Cash</option>
+                            <option value="bank">Bank</option>
+                            <option value="mfs">MFS (Bkash, Nagad, etc)</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
                         <label><?php _e('Notes', 'woocommerce-profit-accounting'); ?></label>
                         <textarea name="notes" style="width: 100%; border-radius: 6px; padding: 8px;"></textarea>
                     </div>
@@ -173,6 +182,7 @@ function wppam_purchases_page()
                             <th><?php _e('Invoice #', 'woocommerce-profit-accounting'); ?></th>
                             <th><?php _e('Date', 'woocommerce-profit-accounting'); ?></th>
                             <th><?php _e('Supplier', 'woocommerce-profit-accounting'); ?></th>
+                            <th><?php _e('Account', 'woocommerce-profit-accounting'); ?></th>
                             <th><?php _e('Items', 'woocommerce-profit-accounting'); ?></th>
                             <th><?php _e('Total Amount', 'woocommerce-profit-accounting'); ?></th>
                             <th><?php _e('Action', 'woocommerce-profit-accounting'); ?></th>
@@ -185,13 +195,17 @@ function wppam_purchases_page()
                                     <td><strong><?php echo esc_html($inv->invoice_no); ?></strong></td>
                                     <td><?php echo date('M d, Y', strtotime($inv->purchase_date)); ?></td>
                                     <td><?php echo esc_html($inv->supplier); ?></td>
+                                    <td><span style="text-transform: capitalize; font-weight: 600;"><?php echo esc_html($inv->payment_account); ?></span></td>
                                     <td><span class="wppam-badge"><?php echo (int)$inv->items_count; ?> <?php _e('Items', 'woocommerce-profit-accounting'); ?></span></td>
                                     <td style="font-weight:700; color: var(--wppam-danger);"><?php echo wc_price($inv->total_amount); ?></td>
                                     <td>
+                                        <?php $modal_id = 'items-data-' . sanitize_title($inv->invoice_no); ?>
                                         <button type="button" class="wppam-btn-secondary wppam-view-invoice" 
                                                 data-invoice="<?php echo esc_attr($inv->invoice_no); ?>" 
                                                 data-date="<?php echo date('M d, Y', strtotime($inv->purchase_date)); ?>"
                                                 data-supplier="<?php echo esc_attr($inv->supplier); ?>"
+                                                data-target="#<?php echo esc_attr($modal_id); ?>"
+                                                data-total="<?php echo esc_attr(wc_price($inv->total_amount)); ?>"
                                                 style="font-size: 11px; padding: 4px 10px;">
                                             <?php _e('View Invoice', 'woocommerce-profit-accounting'); ?>
                                         </button>
@@ -201,7 +215,7 @@ function wppam_purchases_page()
                                     </td>
                                 </tr>
                                 <!-- Data for Modal -->
-                                <template id="items-data-<?php echo esc_attr(sanitize_title($inv->invoice_no)); ?>">
+                                <template id="<?php echo esc_attr($modal_id); ?>">
                                     <?php 
                                     $items = wppam_get_invoice_items($inv->invoice_no);
                                     foreach ($items as $item): 
@@ -249,6 +263,12 @@ function wppam_purchases_page()
                         </tr>
                     </thead>
                     <tbody id="modal-items-body"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align: right; font-weight: 700; padding: 12px; border-top: 2px solid #eee;"><?php _e('Grand Total:', 'woocommerce-profit-accounting'); ?></td>
+                            <td id="modal-total-amount" style="padding: 12px; border-top: 2px solid #eee; font-weight: 800; color: var(--wppam-danger);"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -387,12 +407,19 @@ function wppam_purchases_page()
                 let invoice = $(this).data('invoice');
                 let date = $(this).data('date');
                 let supplier = $(this).data('supplier');
-                let sanitizedId = invoice.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                let itemsHtml = $('#items-data-' + sanitizedId).html();
+                let total = $(this).data('total');
+                let targetId = $(this).data('target');
+                let itemsHtml = $(targetId).html();
+
+                if (!itemsHtml) {
+                    console.error('Invoice data not found for:', targetId);
+                    return;
+                }
 
                 $('#modal-title').text('<?php _e('Invoice:', 'woocommerce-profit-accounting'); ?> ' + invoice);
                 $('#modal-date').text('<?php _e('Date:', 'woocommerce-profit-accounting'); ?> ' + date);
                 $('#modal-supplier').text('<?php _e('Supplier:', 'woocommerce-profit-accounting'); ?> ' + supplier);
+                $('#modal-total-amount').html(total);
                 $('#modal-items-body').html(itemsHtml);
                 $('#wppam-invoice-modal').fadeIn(200);
             });
